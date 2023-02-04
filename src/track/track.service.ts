@@ -43,4 +43,8 @@ export class TrackService {
     checkTrack(this.storage, id);
     this.storage.remove(id);
   }
+
+  removeAlbum(id: string) {
+    this.storage.removeAlbum(id);
+  }
 }

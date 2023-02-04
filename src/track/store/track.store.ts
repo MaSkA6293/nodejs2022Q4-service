@@ -26,8 +26,17 @@ export class InMemoryTrackStore implements TrackStore {
     return update;
   };
 
-  remove = (id: string): undefined => {
+  remove = (id: string) => {
     this.tracks = this.tracks.filter((item) => item.id !== id);
-    return;
+  };
+
+  removeAlbum = (id: string) => {
+    this.tracks = this.tracks.map((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+        return track;
+      }
+      return track;
+    });
   };
 }

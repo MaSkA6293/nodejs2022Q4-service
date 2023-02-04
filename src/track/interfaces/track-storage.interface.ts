@@ -7,5 +7,6 @@ export interface TrackStore {
   findAll: () => TrackEntity[];
   create: (params: CreateTrackDto) => TrackEntity;
   update: (id: string, update: UpdateTrackDto) => TrackEntity;
-  remove: (id: string) => undefined;
+  remove: (id: string) => void;
+  removeAlbum: (id: string) => void;
 }

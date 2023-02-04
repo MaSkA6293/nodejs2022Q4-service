@@ -12,5 +12,6 @@ import { TrackService } from './track.service';
       useClass: InMemoryTrackStore,
     },
   ],
+  exports: [TrackService],
 })
 export class TrackModule {}
