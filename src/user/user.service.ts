@@ -2,15 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserStore } from './interfaces/user-storage.interface';
-import { UserEntity } from './entities/user.entity';
-import { checkId } from 'src/utils';
+import { HttpStatus } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import {
-  checkPassword,
-  checkUser,
   omitPassword,
   getUpdatedUserEntity,
   createRecord,
+  validatePassword,
 } from './utils';
 
 @Injectable()
@@ -18,7 +16,9 @@ export class UserService {
   constructor(@Inject('UserStore') private storage: UserStore) {}
   create(createUserDto: CreateUserDto): UserDto {
     const record = createRecord(createUserDto);
+
     const user = this.storage.create(record);
+
     return omitPassword(user);
   }
 
@@ -26,28 +26,37 @@ export class UserService {
     return this.storage.findAll().map((el) => omitPassword(el));
   }
 
-  findOne(id: string) {
-    checkId(id);
-    return omitPassword(checkUser(this.storage, id));
+  findOne(id: string): UserDto | undefined {
+    const user = this.storage.findOne(id);
+
+    if (!user) return undefined;
+
+    return omitPassword(user);
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): UserDto | undefined {
-    checkId(id);
+  update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): { data: undefined | UserDto; error: HttpStatus } {
+    const user = this.storage.findOne(id);
+    if (user) {
+      const isPasswordValid = validatePassword(user, updateUserDto);
+      if (isPasswordValid) {
+        const update = getUpdatedUserEntity(user, updateUserDto);
 
-    const user: UserEntity | undefined = checkUser(this.storage, id);
+        const updatedUser = this.storage.update(id, update);
 
-    checkPassword(user, updateUserDto);
-
-    const update = getUpdatedUserEntity(user, updateUserDto);
-
-    const updatedUser = this.storage.update(id, update);
-
-    return omitPassword(updatedUser);
+        return { data: omitPassword(updatedUser), error: undefined };
+      }
+      return { data: undefined, error: HttpStatus.FORBIDDEN };
+    } else return { data: undefined, error: HttpStatus.NOT_FOUND };
   }
 
-  remove(id: string) {
-    checkId(id);
-    checkUser(this.storage, id);
+  remove(id: string): boolean {
+    const user = this.storage.findOne(id);
+    if (!user) return false;
+
     this.storage.remove(id);
+    return true;
   }
 }

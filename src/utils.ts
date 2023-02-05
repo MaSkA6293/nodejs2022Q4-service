@@ -7,3 +7,5 @@ export const checkId = (id: string) => {
   if (!checkId)
     throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
 };
+
+export const isValidId = (id: string) => uuidValidate(id);

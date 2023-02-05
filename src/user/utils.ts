@@ -1,7 +1,5 @@
 import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entity';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { UserStore } from './interfaces/user-storage.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,27 +8,6 @@ export const omitPassword = (user: UserEntity): UserDto => {
   const userCopy = Object.assign({}, user);
   delete userCopy.password;
   return userCopy;
-};
-
-export const checkUser = (
-  storage: UserStore,
-  id: string,
-): UserEntity | undefined => {
-  const user = storage.findOne(id);
-  if (!user)
-    throw new HttpException(
-      "record with id === userId doesn't exist",
-      HttpStatus.NOT_FOUND,
-    );
-  return user;
-};
-
-export const checkPassword = (
-  user: UserEntity,
-  updateUserDto: UpdateUserDto,
-) => {
-  if (user.password !== updateUserDto.oldPassword)
-    throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
 };
 
 export const getUpdatedUserEntity = (
@@ -55,4 +32,12 @@ export const createRecord = (createUserDto: CreateUserDto) => {
     updatedAt: new Date().getTime(),
   };
   return record;
+};
+
+export const validatePassword = (
+  user: UserEntity,
+  updateUserDto: UpdateUserDto,
+): boolean => {
+  if (user.password === updateUserDto.oldPassword) return true;
+  return false;
 };

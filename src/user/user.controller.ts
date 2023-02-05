@@ -12,6 +12,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { isValidId } from 'src/utils';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -24,7 +26,15 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+    if (isValidId(id)) {
+      const user = this.userService.findOne(id);
+      if (user) return user;
+      throw new HttpException(
+        "record with id === userId doesn't exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 
   @Post()
@@ -37,12 +47,38 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): UserDto {
-    return this.userService.update(id, updateUserDto);
+    if (isValidId(id)) {
+      const result = this.userService.update(id, updateUserDto);
+      if (result.data) return result.data;
+
+      switch (result.error) {
+        case HttpStatus.NOT_FOUND: {
+          throw new HttpException(
+            "record with id === userId doesn't exist",
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        case HttpStatus.FORBIDDEN: {
+          throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
+        }
+      }
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+    if (isValidId(id)) {
+      const result = this.userService.remove(id);
+
+      if (result) return;
+
+      throw new HttpException(
+        "record with id === userId doesn't exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 }
