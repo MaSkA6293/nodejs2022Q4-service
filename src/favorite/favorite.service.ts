@@ -33,7 +33,10 @@ export class FavoriteService {
       }
     }
     this.storage.add(typeFavoriteEntity.track, id);
-    return { message: 'track with id === trackId exists' };
+    return {
+      message:
+        'track with id === trackId exists, and was successfully added to favorites',
+    };
   }
 
   addAlbum(id: string): { message: string } {

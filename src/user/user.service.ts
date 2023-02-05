@@ -23,12 +23,12 @@ export class UserService {
   }
 
   findAll() {
-    return this.storage.findAll();
+    return this.storage.findAll().map((el) => omitPassword(el));
   }
 
   findOne(id: string) {
     checkId(id);
-    return checkUser(this.storage, id);
+    return omitPassword(checkUser(this.storage, id));
   }
 
   update(id: string, updateUserDto: UpdateUserDto): UserDto | undefined {
