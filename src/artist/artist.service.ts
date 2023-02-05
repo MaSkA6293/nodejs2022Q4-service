@@ -5,8 +5,7 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { ArtistStore } from './interfaces/artist-storage.interface';
-import { checkId } from 'src/utils';
-import { getUpdatedArtistEntity, createRecord, checkArtist } from './utils';
+import { getUpdatedArtistEntity, createRecord } from './utils';
 
 @Injectable()
 export class ArtistService {
@@ -27,28 +26,34 @@ export class ArtistService {
   }
 
   findOne(id: string) {
-    checkId(id);
-    return checkArtist(this.storage, id);
+    const artist = this.storage.findOne(id);
+
+    if (!artist) return undefined;
+
+    return artist;
   }
 
   update(
     id: string,
     updateArtistDto: UpdateArtistDto,
   ): ArtistEntity | undefined {
-    checkId(id);
+    const artist = this.storage.findOne(id);
+    if (!artist) return undefined;
 
-    const Artist: ArtistEntity | undefined = checkArtist(this.storage, id);
-
-    const update = getUpdatedArtistEntity(Artist, updateArtistDto);
+    const update = getUpdatedArtistEntity(artist, updateArtistDto);
 
     return this.storage.update(id, update);
   }
 
   remove(id: string) {
-    checkId(id);
-    checkArtist(this.storage, id);
+    const artist = this.storage.findOne(id);
+
+    if (!artist) return undefined;
+
     this.favoriteService.clearArtist(id);
     this.trackService.removeArtist(id);
     this.storage.remove(id);
+
+    return true;
   }
 }
