@@ -3,10 +3,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserStore } from './interfaces/user-storage.interface';
 import { UserEntity } from './entities/user.entity';
-
+import { checkId } from 'src/utils';
 import { UserDto } from './dto/user.dto';
 import {
-  checkId,
   checkPassword,
   checkUser,
   omitPassword,

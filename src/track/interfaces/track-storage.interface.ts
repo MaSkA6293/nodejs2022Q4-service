@@ -9,4 +9,5 @@ export interface TrackStore {
   update: (id: string, update: UpdateTrackDto) => TrackEntity;
   remove: (id: string) => void;
   removeAlbum: (id: string) => void;
+  removeArtist: (id: string) => void;
 }

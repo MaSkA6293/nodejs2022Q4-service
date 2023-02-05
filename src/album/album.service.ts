@@ -1,21 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { FavoriteService } from 'src/favorite/favorite.service';
 import { TrackService } from 'src/track/track.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { AlbumStore } from './interfaces/album-storage.interface';
-
-import {
-  checkId,
-  getUpdatedAlbumEntity,
-  createRecord,
-  checkAlbum,
-} from './utils';
+import { checkId } from 'src/utils';
+import { getUpdatedAlbumEntity, createRecord, checkAlbum } from './utils';
 
 @Injectable()
 export class AlbumService {
   constructor(
-    @Inject('AlbumStore') private storage: AlbumStore,
+    @Inject('AlbumStore')
+    private storage: AlbumStore,
+    @Inject(forwardRef(() => FavoriteService))
+    private favoriteService: FavoriteService,
+    @Inject(forwardRef(() => TrackService))
     private trackService: TrackService,
   ) {}
   create(createAlbumDto: CreateAlbumDto): AlbumEntity {
@@ -46,6 +46,7 @@ export class AlbumService {
     checkId(id);
     checkAlbum(this.storage, id);
     this.trackService.removeAlbum(id);
+    this.favoriteService.clearAlbum(id);
     this.storage.remove(id);
   }
 }

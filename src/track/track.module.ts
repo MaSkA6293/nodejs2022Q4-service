@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { FavoriteModule } from 'src/favorite/favorite.module';
 import { InMemoryTrackStore } from './store/track.store';
 import { TrackController } from './track.controller';
 import { TrackService } from './track.service';
@@ -12,6 +13,7 @@ import { TrackService } from './track.service';
       useClass: InMemoryTrackStore,
     },
   ],
+  imports: [forwardRef(() => FavoriteModule)],
   exports: [TrackService],
 })
 export class TrackModule {}

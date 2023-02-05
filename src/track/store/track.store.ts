@@ -39,4 +39,14 @@ export class InMemoryTrackStore implements TrackStore {
       return track;
     });
   };
+
+  removeArtist = (id: string) => {
+    this.tracks = this.tracks.map((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+        return track;
+      }
+      return track;
+    });
+  };
 }
