@@ -4,8 +4,6 @@ import {
   FavoriteStore,
   typeFavoriteEntity,
 } from './interfaces/favorite-storage.interface';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { checkId } from 'src/utils';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
 
@@ -19,92 +17,61 @@ export class FavoriteService {
     @Inject(forwardRef(() => TrackService)) private trackService: TrackService,
   ) {}
 
-  addTrack(id: string): { message: string } {
-    try {
-      this.trackService.findOne(id);
-    } catch (e) {
-      if (e.status === 400) {
-        throw e;
-      } else if (e.status === 404) {
-        throw new HttpException(
-          `track with id === trackId doesn't exist`,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-    }
+  addTrack(id: string): boolean {
+    const track = this.trackService.findOne(id);
+
+    if (!track) return false;
+
     this.storage.add(typeFavoriteEntity.track, id);
-    return {
-      message:
-        'track with id === trackId exists, and was successfully added to favorites',
-    };
+
+    return true;
   }
 
-  addAlbum(id: string): { message: string } {
-    try {
-      this.albumService.findOne(id);
-    } catch (e) {
-      if (e.status === 400) {
-        throw e;
-      } else if (e.status === 404) {
-        throw new HttpException(
-          `album with id === albumId doesn't exist`,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-    }
+  addAlbum(id: string): boolean {
+    const album = this.albumService.findOne(id);
+
+    if (!album) return false;
+
     this.storage.add(typeFavoriteEntity.album, id);
-    return { message: 'album with id === albumId exists' };
+
+    return true;
   }
 
-  addArtist(id: string): { message: string } {
-    try {
-      this.artistService.findOne(id);
-    } catch (e) {
-      if (e.status === 400) {
-        throw e;
-      } else if (e.status === 404) {
-        throw new HttpException(
-          `artist with id === artistId doesn't exist`,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-    }
+  addArtist(id: string): boolean {
+    const artist = this.artistService.findOne(id);
+
+    if (!artist) return false;
+
     this.storage.add(typeFavoriteEntity.artist, id);
-    return { message: 'artist with id === artistId exists' };
+
+    return true;
   }
 
-  removeTrack(id: string): void {
-    checkId(id);
+  removeTrack(id: string): boolean {
     const record = this.storage.findOne(typeFavoriteEntity.track, id);
-    if (!record)
-      throw new HttpException(
-        `corresponding track is not favorite`,
-        HttpStatus.NOT_FOUND,
-      );
+    if (!record) return false;
 
-    return this.storage.remove(typeFavoriteEntity.track, id);
+    this.storage.remove(typeFavoriteEntity.track, id);
+
+    return true;
   }
 
-  removeAlbum(id: string): void {
-    checkId(id);
+  removeAlbum(id: string): boolean {
     const record = this.storage.findOne(typeFavoriteEntity.album, id);
-    if (!record)
-      throw new HttpException(
-        `corresponding album is not favorite`,
-        HttpStatus.NOT_FOUND,
-      );
-    return this.storage.remove(typeFavoriteEntity.album, id);
+    if (!record) return false;
+
+    this.storage.remove(typeFavoriteEntity.album, id);
+
+    return true;
   }
 
-  removeArtist(id: string): void {
-    checkId(id);
+  removeArtist(id: string): boolean {
     const record = this.storage.findOne(typeFavoriteEntity.artist, id);
-    if (!record)
-      throw new HttpException(
-        `corresponding artist is not favorite`,
-        HttpStatus.NOT_FOUND,
-      );
-    return this.storage.remove(typeFavoriteEntity.artist, id);
+    if (!record) return false;
+
+    this.storage.remove(typeFavoriteEntity.artist, id);
+
+    return true;
   }
 
   clearTrack(id: string): void {
