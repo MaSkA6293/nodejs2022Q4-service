@@ -15,21 +15,21 @@ import { AlbumEntity } from './entities/album.entity';
 
 @Controller('Album')
 export class AlbumController {
-  constructor(private readonly AlbumService: AlbumService) {}
+  constructor(private readonly albumService: AlbumService) {}
 
   @Get()
   findAll() {
-    return this.AlbumService.findAll();
+    return this.albumService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.AlbumService.findOne(id);
+    return this.albumService.findOne(id);
   }
 
   @Post()
   create(@Body() createAlbumDto: CreateAlbumDto): AlbumEntity {
-    return this.AlbumService.create(createAlbumDto);
+    return this.albumService.create(createAlbumDto);
   }
 
   @Put(':id')
@@ -37,12 +37,12 @@ export class AlbumController {
     @Param('id') id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ): AlbumEntity {
-    return this.AlbumService.update(id, updateAlbumDto);
+    return this.albumService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    return this.AlbumService.remove(id);
+    return this.albumService.remove(id);
   }
 }

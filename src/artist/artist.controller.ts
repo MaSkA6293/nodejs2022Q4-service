@@ -15,21 +15,21 @@ import { ArtistService } from './artist.service';
 
 @Controller('Artist')
 export class ArtistController {
-  constructor(private readonly ArtistService: ArtistService) {}
+  constructor(private readonly artistService: ArtistService) {}
 
   @Get()
   findAll() {
-    return this.ArtistService.findAll();
+    return this.artistService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.ArtistService.findOne(id);
+    return this.artistService.findOne(id);
   }
 
   @Post()
   create(@Body() createArtistDto: CreateArtistDto): ArtistEntity {
-    return this.ArtistService.create(createArtistDto);
+    return this.artistService.create(createArtistDto);
   }
 
   @Put(':id')
@@ -37,12 +37,12 @@ export class ArtistController {
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ): ArtistEntity {
-    return this.ArtistService.update(id, updateArtistDto);
+    return this.artistService.update(id, updateArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    return this.ArtistService.remove(id);
+    return this.artistService.remove(id);
   }
 }
