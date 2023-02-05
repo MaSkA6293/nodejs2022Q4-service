@@ -5,8 +5,7 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { AlbumStore } from './interfaces/album-storage.interface';
-import { checkId } from 'src/utils';
-import { getUpdatedAlbumEntity, createRecord, checkAlbum } from './utils';
+import { getUpdatedAlbumEntity, createRecord } from './utils';
 
 @Injectable()
 export class AlbumService {
@@ -28,25 +27,32 @@ export class AlbumService {
   }
 
   findOne(id: string) {
-    checkId(id);
-    return checkAlbum(this.storage, id);
+    const album = this.storage.findOne(id);
+
+    if (!album) return undefined;
+
+    return album;
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto): AlbumEntity | undefined {
-    checkId(id);
+    const album = this.storage.findOne(id);
 
-    const Album: AlbumEntity | undefined = checkAlbum(this.storage, id);
+    if (!album) return undefined;
 
-    const update = getUpdatedAlbumEntity(Album, updateAlbumDto);
+    const update = getUpdatedAlbumEntity(album, updateAlbumDto);
 
     return this.storage.update(id, update);
   }
 
   remove(id: string) {
-    checkId(id);
-    checkAlbum(this.storage, id);
+    const album = this.storage.findOne(id);
+
+    if (!album) return undefined;
+
     this.trackService.removeAlbum(id);
     this.favoriteService.clearAlbum(id);
     this.storage.remove(id);
+
+    return true;
   }
 }
