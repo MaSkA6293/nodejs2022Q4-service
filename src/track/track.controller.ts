@@ -8,10 +8,12 @@ import {
   Delete,
   HttpCode,
 } from '@nestjs/common';
+import { isValidId } from 'src/utils';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
 import { TrackService } from './track.service';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Controller('track')
 export class TrackController {
@@ -24,7 +26,15 @@ export class TrackController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.trackService.findOne(id);
+    if (isValidId(id)) {
+      const track = this.trackService.findOne(id);
+      if (track) return track;
+      throw new HttpException(
+        "record with id === trackId doesn't exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 
   @Post()
@@ -37,12 +47,32 @@ export class TrackController {
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
   ): TrackEntity {
-    return this.trackService.update(id, updateTrackDto);
+    if (isValidId(id)) {
+      const track = this.trackService.update(id, updateTrackDto);
+
+      if (track) return track;
+
+      throw new HttpException(
+        "record with id === trackId doesn't exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    return this.trackService.remove(id);
+    if (isValidId(id)) {
+      const track = this.trackService.remove(id);
+
+      if (track) return track;
+
+      throw new HttpException(
+        "record with id === trackId doesn't exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 }
