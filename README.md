@@ -1,31 +1,50 @@
-# Home Library Service
+# REST Service
 
-## Prerequisites
+## Description
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+Home Library Service! `Users` can create, read, update, delete data about `Artists`, `Tracks` and `Albums`, add them to `Favorites` in their own Home Library!
 
-## Downloading
+## Install
 
-```
-git clone {repository URL}
-```
+1. Install Node.js
 
-## Installing NPM modules
+2. Clone repository
 
 ```
-npm install
+git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 ```
+
+3. Switch branch <code>develop</code>
+4. To install all dependencies use <code>npm install</code>
+
+## Before running app
+
+1. Rename <code>.env.example</code> to <code>.env</code>
 
 ## Running application
+
+1. Production mode:
 
 ```
 npm start
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+2. Development mode
+
+```
+npm run start:dev
+```
+
+The app will be running on <code>http://localhost:4000/</code> by default
+
+## To get information about REST Service
+
+1. Go to SWAGGER editor <code>https://editor.swagger.io/</code>
+2. Copy <code>[code](./doc/api.yaml)</code> and paste it into editor
+
+## Use Postman collection to test REST Service
+
+Import the collection in Postman: <code>[postman collection](./rest%20service%20nodeJS%20task.postman_collection.json)</code>
 
 ## Testing
 
@@ -64,9 +83,3 @@ npm run lint
 ```
 npm run format
 ```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
