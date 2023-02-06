@@ -9,18 +9,19 @@ export class InMemoryArtistStore implements ArtistStore {
   constructor() {
     this.Artists = [];
   }
-  findOne = (id: string) => this.Artists.find((Artist) => Artist.id === id);
+  findOne = (id: string): ArtistEntity | null =>
+    this.Artists.find((Artist) => Artist.id === id);
 
   findAll = () => this.Artists;
 
-  create = (Artist: ArtistEntity) => {
+  create = (Artist: ArtistEntity): ArtistEntity => {
     this.Artists = [...this.Artists, Artist];
     return Artist;
   };
 
   update = (id: string, update: ArtistEntity): ArtistEntity => {
     this.Artists = this.Artists.map((item) => {
-      if (item.id === update.id) return update;
+      if (item.id === id) return update;
       return item;
     });
     return update;

@@ -13,24 +13,24 @@ export class InMemoryTrackStore implements TrackStore {
 
   findAll = () => this.tracks;
 
-  create = (track: TrackEntity) => {
+  create = (track: TrackEntity): TrackEntity => {
     this.tracks = [...this.tracks, track];
     return track;
   };
 
   update = (id: string, update: TrackEntity): TrackEntity => {
     this.tracks = this.tracks.map((item) => {
-      if (item.id === update.id) return update;
+      if (item.id === id) return update;
       return item;
     });
     return update;
   };
 
-  remove = (id: string) => {
+  remove = (id: string): void => {
     this.tracks = this.tracks.filter((item) => item.id !== id);
   };
 
-  removeAlbum = (id: string) => {
+  removeAlbum = (id: string): void => {
     this.tracks = this.tracks.map((track) => {
       if (track.albumId === id) {
         track.albumId = null;
@@ -40,7 +40,7 @@ export class InMemoryTrackStore implements TrackStore {
     });
   };
 
-  removeArtist = (id: string) => {
+  removeArtist = (id: string): void => {
     this.tracks = this.tracks.map((track) => {
       if (track.artistId === id) {
         track.artistId = null;

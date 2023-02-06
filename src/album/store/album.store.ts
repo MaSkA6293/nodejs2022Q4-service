@@ -9,18 +9,19 @@ export class InMemoryAlbumStore implements AlbumStore {
   constructor() {
     this.Albums = [];
   }
-  findOne = (id: string) => this.Albums.find((Album) => Album.id === id);
+  findOne = (id: string): AlbumEntity | null =>
+    this.Albums.find((Album) => Album.id === id);
 
   findAll = () => this.Albums;
 
-  create = (Album: AlbumEntity) => {
+  create = (Album: AlbumEntity): AlbumEntity => {
     this.Albums = [...this.Albums, Album];
     return Album;
   };
 
   update = (id: string, update: AlbumEntity): AlbumEntity => {
     this.Albums = this.Albums.map((item) => {
-      if (item.id === update.id) return update;
+      if (item.id === id) return update;
       return item;
     });
     return update;

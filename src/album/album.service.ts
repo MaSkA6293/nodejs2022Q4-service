@@ -22,11 +22,11 @@ export class AlbumService {
     return this.storage.create(record);
   }
 
-  findAll() {
+  findAll(): AlbumEntity[] | [] {
     return this.storage.findAll();
   }
 
-  findOne(id: string) {
+  findOne(id: string): AlbumEntity | undefined {
     const album = this.storage.findOne(id);
 
     if (!album) return undefined;
@@ -44,13 +44,13 @@ export class AlbumService {
     return this.storage.update(id, update);
   }
 
-  remove(id: string) {
+  remove(id: string): boolean {
     const album = this.storage.findOne(id);
 
-    if (!album) return undefined;
+    if (!album) return false;
 
     this.trackService.removeAlbum(id);
-    this.favoriteService.clearAlbum(id);
+    this.favoriteService.removeAlbum(id);
     this.storage.remove(id);
 
     return true;

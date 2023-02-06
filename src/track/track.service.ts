@@ -18,7 +18,7 @@ export class TrackService {
     return this.storage.create(record);
   }
 
-  findAll() {
+  findAll(): TrackEntity[] | [] {
     return this.storage.findAll();
   }
 
@@ -32,6 +32,7 @@ export class TrackService {
 
   update(id: string, updateTrackDto: UpdateTrackDto): TrackEntity | undefined {
     const track = this.storage.findOne(id);
+
     if (!track) return undefined;
 
     const update = getUpdatedTrackEntity(track, updateTrackDto);
@@ -41,19 +42,20 @@ export class TrackService {
 
   remove(id: string): boolean {
     const track = this.storage.findOne(id);
+
     if (!track) return undefined;
 
-    this.favoriteService.clearTrack(id);
+    this.favoriteService.removeTrack(id);
     this.storage.remove(id);
 
     return true;
   }
 
-  removeAlbum(id: string) {
+  removeAlbum(id: string): void {
     this.storage.removeAlbum(id);
   }
 
-  removeArtist(id: string) {
+  removeArtist(id: string): void {
     this.storage.removeArtist(id);
   }
 }

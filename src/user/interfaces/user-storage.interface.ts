@@ -6,5 +6,5 @@ export interface UserStore {
   findAll: () => UserEntity[];
   create: (params: CreateUserDto) => UserEntity;
   update: (id: string, update: UserEntity) => UserEntity;
-  remove: (id: string) => undefined;
+  remove: (id: string) => void;
 }

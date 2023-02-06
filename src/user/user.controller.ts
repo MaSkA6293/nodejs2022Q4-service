@@ -12,8 +12,10 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { isValidId } from 'src/utils';
+import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { entity } from 'src/interfaces';
+import { UserUpdate } from './interfaces/user-update.interface';
 
 @Controller('user')
 export class UserController {
@@ -25,16 +27,14 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const user = this.userService.findOne(id);
-      if (user) return user;
-      throw new HttpException(
-        "record with id === userId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+  findOne(@Param('id') id: string): UserDto | HttpException {
+    if (!isValidId(id)) invalidIdBadRequest();
+
+    const user = this.userService.findOne(id);
+
+    if (!user) notFoundError(entity.user);
+
+    return user;
   }
 
   @Post()
@@ -46,39 +46,30 @@ export class UserController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): UserDto {
-    if (isValidId(id)) {
-      const result = this.userService.update(id, updateUserDto);
-      if (result.data) return result.data;
+  ): UserDto | HttpException {
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      switch (result.error) {
-        case HttpStatus.NOT_FOUND: {
-          throw new HttpException(
-            "record with id === userId doesn't exist",
-            HttpStatus.NOT_FOUND,
-          );
-        }
-        case HttpStatus.FORBIDDEN: {
-          throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
-        }
+    const result: UserUpdate = this.userService.update(id, updateUserDto);
+
+    if (result.data) return result.data;
+
+    switch (result.error) {
+      case HttpStatus.NOT_FOUND: {
+        notFoundError(entity.user);
+      }
+      case HttpStatus.FORBIDDEN: {
+        throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
       }
     }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const result = this.userService.remove(id);
+  remove(@Param('id') id: string): void {
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      if (result) return;
+    const result = this.userService.remove(id);
 
-      throw new HttpException(
-        "record with id === userId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!result) notFoundError(entity.user);
   }
 }

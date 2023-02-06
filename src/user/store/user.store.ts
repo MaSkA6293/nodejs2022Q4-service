@@ -11,23 +11,22 @@ export class InMemoryUserStore implements UserStore {
   }
   findOne = (id: string) => this.users.find((user) => user.id === id);
 
-  findAll = () => this.users;
+  findAll = (): UserEntity[] | [] => this.users;
 
-  create = (user: UserEntity) => {
+  create = (user: UserEntity): UserEntity => {
     this.users = [...this.users, user];
     return user;
   };
 
   update = (id: string, update: UserEntity): UserEntity => {
     this.users = this.users.map((item) => {
-      if (item.id === update.id) return update;
+      if (item.id === id) return update;
       return item;
     });
     return update;
   };
 
-  remove = (id: string): undefined => {
+  remove = (id: string): void => {
     this.users = this.users.filter((item) => item.id !== id);
-    return;
   };
 }

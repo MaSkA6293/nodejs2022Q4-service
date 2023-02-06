@@ -12,8 +12,8 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { ArtistService } from './artist.service';
-import { isValidId } from 'src/utils';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
+import { entity } from 'src/interfaces';
 
 @Controller('Artist')
 export class ArtistController {
@@ -26,15 +26,13 @@ export class ArtistController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const artist = this.artistService.findOne(id);
-      if (artist) return artist;
-      throw new HttpException(
-        "record with id === artistId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!isValidId(id)) invalidIdBadRequest();
+
+    const artist = this.artistService.findOne(id);
+
+    if (!artist) notFoundError(entity.artist);
+
+    return artist;
   }
 
   @Post()
@@ -47,32 +45,24 @@ export class ArtistController {
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ): ArtistEntity {
-    if (isValidId(id)) {
-      const track = this.artistService.update(id, updateArtistDto);
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      if (track) return track;
+    const track = this.artistService.update(id, updateArtistDto);
 
-      throw new HttpException(
-        "record with id === artistId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!track) notFoundError(entity.artist);
+
+    return track;
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const artist = this.artistService.remove(id);
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      if (artist) return artist;
+    const artist = this.artistService.remove(id);
 
-      throw new HttpException(
-        "record with id === artistId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!artist) notFoundError(entity.artist);
+
+    return artist;
   }
 }

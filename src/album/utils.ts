@@ -7,17 +7,15 @@ export const getUpdatedAlbumEntity = (
   Album: AlbumEntity,
   updateAlbumDto: UpdateAlbumDto,
 ): AlbumEntity => {
-  const update: AlbumEntity = {
+  return {
     ...Album,
     ...updateAlbumDto,
   };
-  return update;
 };
 
-export const createRecord = (createAlbumDto: CreateAlbumDto) => {
-  const record = {
+export const createRecord = (createAlbumDto: CreateAlbumDto): AlbumEntity => {
+  return {
     ...createAlbumDto,
     id: uuidv4(),
   };
-  return record;
 };

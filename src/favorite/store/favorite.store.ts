@@ -28,11 +28,11 @@ export class InMemoryFavoriteStore implements FavoriteStore {
   findOne = (type: typeFavoriteEntity, id: string): string | null =>
     this[type].find((item: string) => item === id);
 
-  add = (type: typeFavoriteEntity, id: string) => {
+  add = (type: typeFavoriteEntity, id: string): void => {
     this[type] = [...this[type], id];
   };
 
-  remove = (type: typeFavoriteEntity, id: string) => {
+  remove = (type: typeFavoriteEntity, id: string): void => {
     this[type] = this[type].filter((item: string) => item !== id);
   };
 }

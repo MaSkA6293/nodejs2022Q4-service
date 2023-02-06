@@ -74,18 +74,6 @@ export class FavoriteService {
     return true;
   }
 
-  clearTrack(id: string): void {
-    return this.storage.remove(typeFavoriteEntity.track, id);
-  }
-
-  clearAlbum(id: string): void {
-    return this.storage.remove(typeFavoriteEntity.album, id);
-  }
-
-  clearArtist(id: string): void {
-    return this.storage.remove(typeFavoriteEntity.artist, id);
-  }
-
   findAll() {
     const favoritesIds = this.storage.findAll();
     return {

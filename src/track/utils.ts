@@ -13,7 +13,7 @@ export const getUpdatedTrackEntity = (
   };
 };
 
-export const createRecord = (createTrackDto: CreateTrackDto) => {
+export const createRecord = (createTrackDto: CreateTrackDto): TrackEntity => {
   return {
     ...createTrackDto,
     id: uuidv4(),

@@ -8,12 +8,12 @@ import {
   Delete,
   HttpCode,
 } from '@nestjs/common';
-import { isValidId } from 'src/utils';
+import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { entity } from 'src/interfaces';
 
 @Controller('Album')
 export class AlbumController {
@@ -26,15 +26,13 @@ export class AlbumController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const album = this.albumService.findOne(id);
-      if (album) return album;
-      throw new HttpException(
-        "record with id === albumId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!isValidId(id)) invalidIdBadRequest();
+
+    const album = this.albumService.findOne(id);
+
+    if (!album) notFoundError(entity.album);
+
+    return album;
   }
 
   @Post()
@@ -47,32 +45,24 @@ export class AlbumController {
     @Param('id') id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ): AlbumEntity {
-    if (isValidId(id)) {
-      const album = this.albumService.update(id, updateAlbumDto);
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      if (album) return album;
+    const album = this.albumService.update(id, updateAlbumDto);
 
-      throw new HttpException(
-        "record with id === albumId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!album) notFoundError(entity.album);
+
+    return album;
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Param('id') id: string) {
-    if (isValidId(id)) {
-      const album = this.albumService.remove(id);
+    if (!isValidId(id)) invalidIdBadRequest();
 
-      if (album) return album;
+    const album = this.albumService.remove(id);
 
-      throw new HttpException(
-        "record with id === albumId doesn't exist",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    throw new HttpException('id is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    if (!album) notFoundError(entity.album);
+
+    return album;
   }
 }

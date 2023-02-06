@@ -7,17 +7,17 @@ export const getUpdatedArtistEntity = (
   Artist: ArtistEntity,
   updateArtistDto: UpdateArtistDto,
 ): ArtistEntity => {
-  const update: ArtistEntity = {
+  return {
     ...Artist,
     ...updateArtistDto,
   };
-  return update;
 };
 
-export const createRecord = (createArtistDto: CreateArtistDto) => {
-  const record = {
+export const createRecord = (
+  createArtistDto: CreateArtistDto,
+): ArtistEntity => {
+  return {
     ...createArtistDto,
     id: uuidv4(),
   };
-  return record;
 };
