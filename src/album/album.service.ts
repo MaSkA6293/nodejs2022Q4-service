@@ -26,12 +26,8 @@ export class AlbumService {
     return this.storage.findAll();
   }
 
-  findOne(id: string): AlbumEntity | undefined {
-    const album = this.storage.findOne(id);
-
-    if (!album) return undefined;
-
-    return album;
+  findOne(id: string): AlbumEntity | null {
+    return this.storage.findOne(id);
   }
 
   update(album: AlbumEntity, updateAlbumDto: UpdateAlbumDto): AlbumEntity {

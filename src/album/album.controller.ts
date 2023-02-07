@@ -13,7 +13,6 @@ import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { TrackIsExistPipe } from 'src/track/track.isExist.pipe';
 import { AlbumIsExistPipe } from './album.isExist.pipe';
 
 @Controller('Album')
@@ -26,7 +25,7 @@ export class AlbumController {
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', ParseUUIDPipe, TrackIsExistPipe) album: AlbumEntity) {
+  findOne(@Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity) {
     return album;
   }
 
@@ -48,6 +47,6 @@ export class AlbumController {
   remove(
     @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
   ): void {
-    this.albumService.remove(album);
+    this.albumService.remove(album.id);
   }
 }
