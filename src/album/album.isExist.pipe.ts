@@ -11,7 +11,7 @@ export class AlbumIsExistPipe implements PipeTransform<string, AlbumEntity> {
   transform(uuid: string): AlbumEntity {
     const album = this.albumService.findOne(uuid);
 
-    if (!album) notFoundError(entity.track);
+    if (!album) notFoundError(entity.album);
 
     return album;
   }

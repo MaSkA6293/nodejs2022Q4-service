@@ -40,9 +40,9 @@ export class AlbumService {
     return this.storage.update(album.id, update);
   }
 
-  remove(album: AlbumEntity): void {
-    this.trackService.removeAlbum(album.id);
-    this.favoriteService.removeAlbum(album.id);
-    this.storage.remove(album.id);
+  remove(id: string): void {
+    this.trackService.removeAlbum(id);
+    this.favoriteService.removeAlbum(id);
+    this.storage.remove(id);
   }
 }
