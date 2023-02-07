@@ -7,13 +7,13 @@ import {
   Param,
   Delete,
   HttpCode,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { ArtistService } from './artist.service';
-import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
-import { entity } from 'src/interfaces';
+import { ArtistIsExistPipe } from './artist.isExist.pipe';
 
 @Controller('Artist')
 export class ArtistController {
@@ -24,14 +24,10 @@ export class ArtistController {
     return this.artistService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const artist = this.artistService.findOne(id);
-
-    if (!artist) notFoundError(entity.artist);
-
+  @Get(':uuid')
+  findOne(
+    @Param('uuid', ParseUUIDPipe, ArtistIsExistPipe) artist: ArtistEntity,
+  ): ArtistEntity {
     return artist;
   }
 
@@ -40,29 +36,19 @@ export class ArtistController {
     return this.artistService.create(createArtistDto);
   }
 
-  @Put(':id')
+  @Put(':uuid')
   update(
-    @Param('id') id: string,
+    @Param('uuid', ParseUUIDPipe, ArtistIsExistPipe) artist: ArtistEntity,
     @Body() updateArtistDto: UpdateArtistDto,
   ): ArtistEntity {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const track = this.artistService.update(id, updateArtistDto);
-
-    if (!track) notFoundError(entity.artist);
-
-    return track;
+    return this.artistService.update(artist, updateArtistDto);
   }
 
-  @Delete(':id')
+  @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const artist = this.artistService.remove(id);
-
-    if (!artist) notFoundError(entity.artist);
-
-    return artist;
+  remove(
+    @Param('uuid', ParseUUIDPipe, ArtistIsExistPipe) artist: ArtistEntity,
+  ) {
+    this.artistService.remove(artist.id);
   }
 }

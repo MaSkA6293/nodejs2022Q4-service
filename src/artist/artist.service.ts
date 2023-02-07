@@ -34,27 +34,17 @@ export class ArtistService {
   }
 
   update(
-    id: string,
+    artist: ArtistEntity,
     updateArtistDto: UpdateArtistDto,
   ): ArtistEntity | undefined {
-    const artist = this.storage.findOne(id);
-
-    if (!artist) return undefined;
-
     const update = getUpdatedArtistEntity(artist, updateArtistDto);
 
-    return this.storage.update(id, update);
+    return this.storage.update(artist.id, update);
   }
 
-  remove(id: string): boolean {
-    const artist = this.storage.findOne(id);
-
-    if (!artist) return false;
-
+  remove(id: string): void {
     this.favoriteService.removeArtist(id);
     this.trackService.removeArtist(id);
     this.storage.remove(id);
-
-    return true;
   }
 }
