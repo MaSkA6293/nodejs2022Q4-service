@@ -38,8 +38,6 @@ export class UserService {
   update(id: string, updateUserDto: UpdateUserDto): UserUpdate {
     const user = this.storage.findOne(id);
 
-    if (!user) return { data: undefined, error: HttpStatus.NOT_FOUND };
-
     const isPasswordValid = validatePassword(user, updateUserDto);
     if (!isPasswordValid)
       return { data: undefined, error: HttpStatus.FORBIDDEN };
@@ -51,13 +49,7 @@ export class UserService {
     return { data: omitPassword(updatedUser), error: undefined };
   }
 
-  remove(id: string): boolean {
-    const user = this.storage.findOne(id);
-
-    if (!user) return false;
-
+  remove(id: string): void {
     this.storage.remove(id);
-
-    return true;
   }
 }
