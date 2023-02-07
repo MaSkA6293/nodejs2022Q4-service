@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Delete,
+  HttpCode,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
 import { FavoriteService } from './favorite.service';
 import { HttpStatus } from '@nestjs/common';
@@ -14,12 +22,11 @@ export class FavoriteController {
     return this.favoriteService.findAll();
   }
 
-  @Post('track/:id')
+  @Post('track/:uuid')
   @HttpCode(201)
-  addTrack(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
+  addTrack(@Param('uuid', ParseUUIDPipe) id: string) {
     const result = this.favoriteService.addTrack(id);
+
     if (!result) notFoundError(entity.track, HttpStatus.UNPROCESSABLE_ENTITY);
 
     return {
@@ -27,11 +34,9 @@ export class FavoriteController {
     };
   }
 
-  @Post('album/:id')
+  @Post('album/:uuid')
   @HttpCode(201)
-  addAlbum(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
+  addAlbum(@Param('uuid', ParseUUIDPipe) id: string) {
     const result = this.favoriteService.addAlbum(id);
 
     if (!result) notFoundError(entity.album, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -41,9 +46,9 @@ export class FavoriteController {
     };
   }
 
-  @Post('artist/:id')
+  @Post('artist/:uuid')
   @HttpCode(201)
-  addArtist(@Param('id') id: string) {
+  addArtist(@Param('uuid', ParseUUIDPipe) id: string) {
     if (!isValidId(id)) invalidIdBadRequest();
 
     const result = this.favoriteService.addArtist(id);
@@ -55,9 +60,9 @@ export class FavoriteController {
     };
   }
 
-  @Delete('album/:id')
+  @Delete('album/:uuid')
   @HttpCode(204)
-  removeAlbum(@Param('id') id: string) {
+  removeAlbum(@Param('uuid', ParseUUIDPipe) id: string) {
     if (!isValidId(id)) invalidIdBadRequest();
 
     const result = this.favoriteService.removeAlbum(id);
@@ -65,9 +70,9 @@ export class FavoriteController {
     if (!result) notFavoriteError(entity.album);
   }
 
-  @Delete('track/:id')
+  @Delete('track/:uuid')
   @HttpCode(204)
-  removeTrack(@Param('id') id: string) {
+  removeTrack(@Param('uuid', ParseUUIDPipe) id: string) {
     if (!isValidId(id)) invalidIdBadRequest();
 
     const result = this.favoriteService.removeTrack(id);
@@ -75,9 +80,9 @@ export class FavoriteController {
     if (!result) notFavoriteError(entity.track);
   }
 
-  @Delete('artist/:id')
+  @Delete('artist/:uuid')
   @HttpCode(204)
-  removeArtist(@Param('id') id: string) {
+  removeArtist(@Param('uuid', ParseUUIDPipe) id: string) {
     if (!isValidId(id)) invalidIdBadRequest();
 
     const result = this.favoriteService.removeArtist(id);
