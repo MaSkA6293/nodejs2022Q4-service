@@ -30,25 +30,18 @@ export class TrackService {
     return track;
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto): TrackEntity | undefined {
-    const track = this.storage.findOne(id);
-
-    if (!track) return undefined;
-
+  update(
+    track: TrackEntity,
+    updateTrackDto: UpdateTrackDto,
+  ): TrackEntity | undefined {
     const update = getUpdatedTrackEntity(track, updateTrackDto);
 
-    return this.storage.update(id, update);
+    return this.storage.update(track.id, update);
   }
 
-  remove(id: string): boolean {
-    const track = this.storage.findOne(id);
-
-    if (!track) return undefined;
-
+  remove(id: string): void {
     this.favoriteService.removeTrack(id);
     this.storage.remove(id);
-
-    return true;
   }
 
   removeAlbum(id: string): void {

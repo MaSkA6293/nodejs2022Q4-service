@@ -8,13 +8,13 @@ import {
   Delete,
   HttpCode,
   HttpException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
-import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
 import { TrackService } from './track.service';
-import { entity } from 'src/interfaces';
+import { TrackIsExistPipe } from './track.isExist.pipe';
 
 @Controller('track')
 export class TrackController {
@@ -25,14 +25,10 @@ export class TrackController {
     return this.trackService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): TrackEntity | HttpException {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const track = this.trackService.findOne(id);
-
-    if (!track) notFoundError(entity.track);
-
+  @Get(':uuid')
+  findOne(
+    @Param('uuid', ParseUUIDPipe, TrackIsExistPipe) track: TrackEntity,
+  ): TrackEntity {
     return track;
   }
 
@@ -41,27 +37,21 @@ export class TrackController {
     return this.trackService.create(createTrackDto);
   }
 
-  @Put(':id')
+  @Put(':uuid')
   update(
-    @Param('id') id: string,
+    @Param('uuid', ParseUUIDPipe, TrackIsExistPipe) track: TrackEntity,
     @Body() updateTrackDto: UpdateTrackDto,
   ): TrackEntity | HttpException {
-    if (!isValidId(id)) invalidIdBadRequest();
+    const updatedTrack = this.trackService.update(track, updateTrackDto);
 
-    const track = this.trackService.update(id, updateTrackDto);
-
-    if (!track) notFoundError(entity.track);
-
-    return track;
+    return updatedTrack;
   }
 
-  @Delete(':id')
+  @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('id') id: string): void | HttpException {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const track = this.trackService.remove(id);
-
-    if (!track) notFoundError(entity.track);
+  remove(
+    @Param('uuid', ParseUUIDPipe, TrackIsExistPipe) track: TrackEntity,
+  ): void {
+    this.trackService.remove(track.id);
   }
 }
