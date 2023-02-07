@@ -34,25 +34,15 @@ export class AlbumService {
     return album;
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto): AlbumEntity | undefined {
-    const album = this.storage.findOne(id);
-
-    if (!album) return undefined;
-
+  update(album: AlbumEntity, updateAlbumDto: UpdateAlbumDto): AlbumEntity {
     const update = getUpdatedAlbumEntity(album, updateAlbumDto);
 
-    return this.storage.update(id, update);
+    return this.storage.update(album.id, update);
   }
 
-  remove(id: string): boolean {
-    const album = this.storage.findOne(id);
-
-    if (!album) return false;
-
-    this.trackService.removeAlbum(id);
-    this.favoriteService.removeAlbum(id);
-    this.storage.remove(id);
-
-    return true;
+  remove(album: AlbumEntity): void {
+    this.trackService.removeAlbum(album.id);
+    this.favoriteService.removeAlbum(album.id);
+    this.storage.remove(album.id);
   }
 }

@@ -7,13 +7,14 @@ import {
   Param,
   Delete,
   HttpCode,
+  ParseUUIDPipe,
 } from '@nestjs/common';
-import { invalidIdBadRequest, isValidId, notFoundError } from 'src/utils';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { entity } from 'src/interfaces';
+import { TrackIsExistPipe } from 'src/track/track.isExist.pipe';
+import { AlbumIsExistPipe } from './album.isExist.pipe';
 
 @Controller('Album')
 export class AlbumController {
@@ -24,14 +25,8 @@ export class AlbumController {
     return this.albumService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const album = this.albumService.findOne(id);
-
-    if (!album) notFoundError(entity.album);
-
+  @Get(':uuid')
+  findOne(@Param('uuid', ParseUUIDPipe, TrackIsExistPipe) album: AlbumEntity) {
     return album;
   }
 
@@ -40,29 +35,19 @@ export class AlbumController {
     return this.albumService.create(createAlbumDto);
   }
 
-  @Put(':id')
+  @Put(':uuid')
   update(
-    @Param('id') id: string,
+    @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ): AlbumEntity {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const album = this.albumService.update(id, updateAlbumDto);
-
-    if (!album) notFoundError(entity.album);
-
-    return album;
+    return this.albumService.update(album, updateAlbumDto);
   }
 
-  @Delete(':id')
+  @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    if (!isValidId(id)) invalidIdBadRequest();
-
-    const album = this.albumService.remove(id);
-
-    if (!album) notFoundError(entity.album);
-
-    return album;
+  remove(
+    @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
+  ): void {
+    this.albumService.remove(album);
   }
 }
