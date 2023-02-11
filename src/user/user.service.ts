@@ -1,55 +1,57 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserStore } from './interfaces/user-storage.interface';
 import { HttpStatus } from '@nestjs/common';
-import { UserDto } from './dto/user.dto';
-import {
-  omitPassword,
-  getUpdatedUserEntity,
-  createRecord,
-  validatePassword,
-} from './utils';
-import { UserUpdate } from './interfaces/user-update.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(@Inject('UserStore') private storage: UserStore) {}
-  create(createUserDto: CreateUserDto): UserDto {
-    const record = createRecord(createUserDto);
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
+  async create(createUserDto: CreateUserDto) {
+    const user = new UserEntity().create(createUserDto);
 
-    const user = this.storage.create(record);
+    const createdUser = this.userRepository.create(user);
 
-    return omitPassword(user);
+    return (await this.userRepository.save(createdUser)).toResponse();
   }
 
-  findAll(): UserDto[] | [] {
-    return this.storage.findAll().map((el) => omitPassword(el));
+  async findAll() {
+    const users = await this.userRepository.find();
+
+    return users.map((user) => user.toResponse());
   }
 
-  findOne(id: string): UserDto | undefined {
-    const user = this.storage.findOne(id);
+  async findOne(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) return undefined;
 
-    return omitPassword(user);
+    return user.toResponse();
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): UserUpdate {
-    const user = this.storage.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({ where: { id } });
 
-    const isPasswordValid = validatePassword(user, updateUserDto);
-    if (!isPasswordValid)
+    if (!user) return { data: undefined, error: HttpStatus.NOT_FOUND };
+
+    if (!user.validatePassword(updateUserDto))
       return { data: undefined, error: HttpStatus.FORBIDDEN };
 
-    const update = getUpdatedUserEntity(user, updateUserDto);
+    const update: UserEntity = user.update(updateUserDto);
 
-    const updatedUser = this.storage.update(id, update);
+    const result = await this.userRepository.update(user.id, update);
 
-    return { data: omitPassword(updatedUser), error: undefined };
+    if (result.affected) return { data: update.toResponse(), error: undefined };
+
+    return { data: undefined, error: HttpStatus.INTERNAL_SERVER_ERROR };
   }
 
-  remove(id: string): void {
-    this.storage.remove(id);
+  async remove(id: string) {
+    await this.userRepository.delete(id);
   }
 }

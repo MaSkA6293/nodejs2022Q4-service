@@ -6,9 +6,22 @@ import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { APP_PIPE } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import configService from './ormconfig';
+import * as dotenv from 'dotenv';
+import { ConfigModule } from '@nestjs/config';
+dotenv.config();
 
 @Module({
-  imports: [UserModule, AlbumModule, ArtistModule, TrackModule, FavoriteModule],
+  imports: [
+    UserModule,
+    AlbumModule,
+    ArtistModule,
+    TrackModule,
+    FavoriteModule,
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
+    TypeOrmModule.forRoot(configService),
+  ],
   controllers: [AppController],
   providers: [
     {

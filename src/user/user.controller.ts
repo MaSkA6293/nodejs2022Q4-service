@@ -12,12 +12,11 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDto } from './dto/user.dto';
 import { notFoundError } from 'src/utils';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { entity } from 'src/interfaces';
-import { UserUpdate } from './interfaces/user-update.interface';
 import { UserIsExistPipe } from './user.isExist.pipe';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -29,21 +28,21 @@ export class UserController {
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserDto) {
+  findOne(@Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity) {
     return user;
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): UserDto {
+  create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Put(':uuid')
-  update(
-    @Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserDto,
+  async update(
+    @Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity,
     @Body() updateUserDto: UpdateUserDto,
-  ): UserDto | HttpException {
-    const result: UserUpdate = this.userService.update(user.id, updateUserDto);
+  ) {
+    const result = await this.userService.update(user.id, updateUserDto);
 
     if (result.data) return result.data;
 
@@ -59,7 +58,9 @@ export class UserController {
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserDto): void {
+  remove(
+    @Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity,
+  ): void {
     this.userService.remove(user.id);
   }
 }

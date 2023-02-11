@@ -9,8 +9,6 @@ services:
       - rest-network
     depends_on:
       - postgres
-    environment:
-      - PORT=${PORT}
     volumes:
       - .:/usr/app
       - /usr/app/node_modules
@@ -19,7 +17,7 @@ services:
     container_name: postgres
     build: ./src/database
     volumes:
-      - ./data:/usr/app/data:rw
+      - ./src/database/data:/var/lib/postgresql/data:rw
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
@@ -31,4 +29,4 @@ services:
     restart: always
 networks:
   rest-network:
-    external: true
+    driver: bridge

@@ -49,11 +49,6 @@ Import the collection in Postman: <code>[postman collection](./rest%20service%20
 ## Using App with Docker
 
 - Download and install docker
-- Create network
-
-```
-docker network create rest-network
-```
 
 ## How to start
 
