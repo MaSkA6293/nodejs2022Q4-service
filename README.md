@@ -46,6 +46,53 @@ The app will be running on <code>http://localhost:4000/</code> by default
 
 Import the collection in Postman: <code>[postman collection](./rest%20service%20nodeJS%20task.postman_collection.json)</code>
 
+## Using App with Docker
+
+- Download and install docker
+- Create network
+
+```
+docker network create rest-network
+```
+
+## How to start
+
+- Write in console in root folder:
+
+```
+docker-compose up
+```
+
+## Script for vulnerabilities scanning
+
+- To scan app image
+
+```
+npm run scan:app
+```
+
+- To scan database image
+
+```
+npm run scan:db
+```
+
+## The image is pushed to DockerHub
+
+The [images](https://hub.docker.com/repository/docker/812857b74d26/nodejs2022q4-service/tags?page=1&ordering=last_updated)
+
+To get app image:
+
+```
+docker pull 812857b74d26/nodejs2022q4-service:app
+```
+
+To get db image:
+
+```
+docker pull 812857b74d26/nodejs2022q4-service:db
+```
+
 ## Testing
 
 After application running open new terminal and enter:
