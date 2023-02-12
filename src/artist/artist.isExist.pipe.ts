@@ -1,15 +1,22 @@
 import { PipeTransform, Injectable } from '@nestjs/common';
 import { entity } from 'src/interfaces';
 import { notFoundError } from 'src/utils';
-import { ArtistService } from './artist.service';
+
 import { ArtistEntity } from './entities/artist.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class ArtistIsExistPipe implements PipeTransform<string, ArtistEntity> {
-  constructor(private readonly artistService: ArtistService) {}
+export class ArtistIsExistPipe
+  implements PipeTransform<string, Promise<ArtistEntity>>
+{
+  constructor(
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
+  ) {}
 
-  transform(uuid: string): ArtistEntity {
-    const artist = this.artistService.findOne(uuid);
+  async transform(uuid: string) {
+    const artist = await this.artistRepository.findOne({ where: { id: uuid } });
 
     if (!artist) notFoundError(entity.artist);
 

@@ -32,7 +32,7 @@ export class ArtistController {
   }
 
   @Post()
-  create(@Body() createArtistDto: CreateArtistDto): ArtistEntity {
+  create(@Body() createArtistDto: CreateArtistDto): Promise<ArtistEntity> {
     return this.artistService.create(createArtistDto);
   }
 
@@ -40,7 +40,7 @@ export class ArtistController {
   update(
     @Param('uuid', ParseUUIDPipe, ArtistIsExistPipe) artist: ArtistEntity,
     @Body() updateArtistDto: UpdateArtistDto,
-  ): ArtistEntity {
+  ): Promise<ArtistEntity> {
     return this.artistService.update(artist, updateArtistDto);
   }
 

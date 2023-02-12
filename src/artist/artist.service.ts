@@ -4,47 +4,51 @@ import { TrackService } from 'src/track/track.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
-import { ArtistStore } from './interfaces/artist-storage.interface';
-import { getUpdatedArtistEntity, createRecord } from './utils';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ArtistService {
   constructor(
-    @Inject('ArtistStore') private storage: ArtistStore,
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
     @Inject(forwardRef(() => FavoriteService))
     private favoriteService: FavoriteService,
     @Inject(forwardRef(() => TrackService))
     private trackService: TrackService,
   ) {}
-  create(createArtistDto: CreateArtistDto): ArtistEntity {
-    const record = createRecord(createArtistDto);
-    return this.storage.create(record);
+  async create(createArtistDto: CreateArtistDto) {
+    const artist = new ArtistEntity().create(createArtistDto);
+
+    const createdArtist = await this.artistRepository.save(artist);
+
+    return createdArtist;
   }
 
-  findAll(): ArtistEntity[] | [] {
-    return this.storage.findAll();
+  async findAll() {
+    const artists = await this.artistRepository.find();
+    return artists;
   }
 
-  findOne(id: string): ArtistEntity | null {
-    const artist = this.storage.findOne(id);
+  async findOne(id: string) {
+    const artist = await this.artistRepository.findOne({ where: { id } });
 
     if (!artist) return undefined;
 
     return artist;
   }
 
-  update(
-    artist: ArtistEntity,
-    updateArtistDto: UpdateArtistDto,
-  ): ArtistEntity | undefined {
-    const update = getUpdatedArtistEntity(artist, updateArtistDto);
+  async update(artist: ArtistEntity, updateArtistDto: UpdateArtistDto) {
+    const update = artist.update(updateArtistDto);
 
-    return this.storage.update(artist.id, update);
+    const result = await this.artistRepository.update(artist.id, update);
+
+    if (result.affected) return update;
   }
 
   remove(id: string): void {
     this.favoriteService.removeArtist(id);
     this.trackService.removeArtist(id);
-    this.storage.remove(id);
+    this.artistRepository.delete(id);
   }
 }
