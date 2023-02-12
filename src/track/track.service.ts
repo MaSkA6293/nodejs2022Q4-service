@@ -3,52 +3,47 @@ import { FavoriteService } from 'src/favorite/favorite.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
-import { TrackStore } from './interfaces/track-storage.interface';
-import { getUpdatedTrackEntity, createRecord } from './utils';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
   constructor(
-    @Inject('TrackStore') private storage: TrackStore,
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>,
     @Inject(forwardRef(() => FavoriteService))
     private favoriteService: FavoriteService,
   ) {}
-  create(createTrackDto: CreateTrackDto): TrackEntity {
-    const record = createRecord(createTrackDto);
-    return this.storage.create(record);
+  async create(createTrackDto: CreateTrackDto) {
+    const track = new TrackEntity().create(createTrackDto);
+
+    const createdTrack = await this.trackRepository.save(track);
+
+    return createdTrack;
   }
 
-  findAll(): TrackEntity[] | [] {
-    return this.storage.findAll();
+  async findAll() {
+    const track = await this.trackRepository.find();
+    return track;
   }
 
-  findOne(id: string): TrackEntity | undefined {
-    const track = this.storage.findOne(id);
+  async findOne(id: string) {
+    const track = await this.trackRepository.findOne({ where: { id } });
 
     if (!track) return undefined;
 
     return track;
   }
 
-  update(
-    track: TrackEntity,
-    updateTrackDto: UpdateTrackDto,
-  ): TrackEntity | undefined {
-    const update = getUpdatedTrackEntity(track, updateTrackDto);
+  async update(track: TrackEntity, updateTrackDto: UpdateTrackDto) {
+    const update = track.update(updateTrackDto);
 
-    return this.storage.update(track.id, update);
+    const result = await this.trackRepository.update(track.id, update);
+
+    if (result.affected) return update;
   }
 
   remove(id: string): void {
-    this.favoriteService.removeTrack(id);
-    this.storage.remove(id);
-  }
-
-  removeAlbum(id: string): void {
-    this.storage.removeAlbum(id);
-  }
-
-  removeArtist(id: string): void {
-    this.storage.removeArtist(id);
+    this.trackRepository.delete(id);
   }
 }

@@ -21,7 +21,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  findAll(): TrackEntity[] | [] {
+  findAll(): Promise<TrackEntity[] | []> {
     return this.trackService.findAll();
   }
 
@@ -33,7 +33,7 @@ export class TrackController {
   }
 
   @Post()
-  create(@Body() createTrackDto: CreateTrackDto): TrackEntity {
+  create(@Body() createTrackDto: CreateTrackDto): Promise<TrackEntity> {
     return this.trackService.create(createTrackDto);
   }
 
@@ -41,7 +41,7 @@ export class TrackController {
   update(
     @Param('uuid', ParseUUIDPipe, TrackIsExistPipe) track: TrackEntity,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): TrackEntity | HttpException {
+  ): Promise<TrackEntity> | HttpException {
     const updatedTrack = this.trackService.update(track, updateTrackDto);
 
     return updatedTrack;

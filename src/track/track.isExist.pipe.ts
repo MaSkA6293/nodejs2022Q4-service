@@ -2,14 +2,20 @@ import { PipeTransform, Injectable } from '@nestjs/common';
 import { entity } from 'src/interfaces';
 import { notFoundError } from 'src/utils';
 import { TrackEntity } from './entities/track.entity';
-import { TrackService } from './track.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class TrackIsExistPipe implements PipeTransform<string, TrackEntity> {
-  constructor(private readonly trackService: TrackService) {}
+export class TrackIsExistPipe
+  implements PipeTransform<string, Promise<TrackEntity>>
+{
+  constructor(
+    @InjectRepository(TrackEntity)
+    private artistRepository: Repository<TrackEntity>,
+  ) {}
 
-  transform(uuid: string): TrackEntity {
-    const track = this.trackService.findOne(uuid);
+  async transform(uuid: string) {
+    const track = this.artistRepository.findOne({ where: { id: uuid } });
 
     if (!track) notFoundError(entity.track);
 
