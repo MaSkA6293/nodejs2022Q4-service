@@ -5,11 +5,14 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { AlbumStore } from './interfaces/album-storage.interface';
-import { getUpdatedAlbumEntity, createRecord } from './utils';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumService {
   constructor(
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>,
     @Inject('AlbumStore')
     private storage: AlbumStore,
     @Inject(forwardRef(() => FavoriteService))
@@ -17,28 +20,38 @@ export class AlbumService {
     @Inject(forwardRef(() => TrackService))
     private trackService: TrackService,
   ) {}
-  create(createAlbumDto: CreateAlbumDto): AlbumEntity {
-    const record = createRecord(createAlbumDto);
-    return this.storage.create(record);
+  async create(createAlbumDto: CreateAlbumDto) {
+    const artist = new AlbumEntity().create(createAlbumDto);
+
+    const createdArtist = await this.albumRepository.save(artist);
+
+    return createdArtist;
   }
 
-  findAll(): AlbumEntity[] | [] {
-    return this.storage.findAll();
+  async findAll() {
+    const albums = await this.albumRepository.find();
+    return albums;
   }
 
-  findOne(id: string): AlbumEntity | null {
-    return this.storage.findOne(id);
+  async findOne(id: string) {
+    const album = await this.albumRepository.findOne({ where: { id } });
+
+    if (!album) return undefined;
+
+    return album;
   }
 
-  update(album: AlbumEntity, updateAlbumDto: UpdateAlbumDto): AlbumEntity {
-    const update = getUpdatedAlbumEntity(album, updateAlbumDto);
+  async update(album: AlbumEntity, updateAlbumDto: UpdateAlbumDto) {
+    const update = album.update(updateAlbumDto);
 
-    return this.storage.update(album.id, update);
+    const result = await this.albumRepository.update(album.id, update);
+
+    if (result.affected) return update;
   }
 
   remove(id: string): void {
     this.trackService.removeAlbum(id);
     this.favoriteService.removeAlbum(id);
-    this.storage.remove(id);
+    this.albumRepository.delete(id);
   }
 }
