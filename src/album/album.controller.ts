@@ -20,33 +20,36 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  async findAll(): Promise<AlbumEntity[]> {
+    return await this.albumService.findAll();
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity) {
+  findOne(
+    @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
+  ): AlbumEntity {
     return album;
   }
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto): AlbumEntity {
-    return this.albumService.create(createAlbumDto);
+  async create(@Body() createAlbumDto: CreateAlbumDto): Promise<AlbumEntity> {
+    const album = await this.albumService.create(createAlbumDto);
+    return album;
   }
 
   @Put(':uuid')
-  update(
+  async update(
     @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
     @Body() updateAlbumDto: UpdateAlbumDto,
-  ): AlbumEntity {
-    return this.albumService.update(album, updateAlbumDto);
+  ): Promise<AlbumEntity> {
+    return await this.albumService.update(album, updateAlbumDto);
   }
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(
+  async remove(
     @Param('uuid', ParseUUIDPipe, AlbumIsExistPipe) album: AlbumEntity,
-  ): void {
-    this.albumService.remove(album.id);
+  ): Promise<void> {
+    await this.albumService.remove(album.id);
   }
 }
