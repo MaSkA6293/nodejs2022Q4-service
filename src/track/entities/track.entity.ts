@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AlbumEntity } from 'src/album/entities/album.entity';
+import { ArtistEntity } from 'src/artist/entities/artist.entity';
+import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from '../dto/create-track.dto';
 import { UpdateTrackDto } from '../dto/update-track.dto';
@@ -11,14 +14,29 @@ export class TrackEntity {
   @Column()
   name: string;
 
-  @Column()
-  artistId: string | null;
+  @Column({ nullable: true })
+  artistId: string;
 
-  @Column()
-  albumId: string | null;
+  @Column({ nullable: true })
+  albumId: string;
 
   @Column()
   duration: number;
+
+  @ManyToOne(() => ArtistEntity, (artist) => artist.id, {
+    onDelete: 'SET NULL',
+  })
+  artist: ArtistEntity;
+
+  @ManyToOne(() => AlbumEntity, (album) => album.id, {
+    onDelete: 'SET NULL',
+  })
+  album: AlbumEntity;
+
+  @ManyToOne(() => FavoriteEntity, (favorite) => favorite.tracks, {
+    onDelete: 'SET NULL',
+  })
+  favorites: FavoriteEntity;
 
   update(updateTrackDto: UpdateTrackDto) {
     const { name, artistId, albumId, duration } = updateTrackDto;

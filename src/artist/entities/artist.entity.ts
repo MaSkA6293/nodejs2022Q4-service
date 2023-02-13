@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from '../dto/create-artist.dto';
 import { UpdateArtistDto } from '../dto/update-artist.dto';
@@ -14,16 +15,25 @@ export class ArtistEntity {
   @Column()
   grammy: boolean;
 
+  @ManyToOne(() => FavoriteEntity, (favorite) => favorite.artists, {
+    onDelete: 'SET NULL',
+  })
+  favorites: FavoriteEntity;
+
   update(updateArtistDto: UpdateArtistDto) {
-    this.name = updateArtistDto.name;
-    this.grammy = updateArtistDto.grammy;
+    const { name, grammy } = updateArtistDto;
+
+    this.name = name;
+    this.grammy = grammy;
     return this;
   }
 
   create(createArtistDto: CreateArtistDto) {
+    const { name, grammy } = createArtistDto;
+
     this.id = uuidv4();
-    this.name = createArtistDto.name;
-    this.grammy = createArtistDto.grammy;
+    this.name = name;
+    this.grammy = grammy;
     return this;
   }
 }
