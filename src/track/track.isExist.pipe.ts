@@ -11,11 +11,11 @@ export class TrackIsExistPipe
 {
   constructor(
     @InjectRepository(TrackEntity)
-    private artistRepository: Repository<TrackEntity>,
+    private trackRepository: Repository<TrackEntity>,
   ) {}
 
   async transform(uuid: string) {
-    const track = this.artistRepository.findOne({ where: { id: uuid } });
+    const track = await this.trackRepository.findOne({ where: { id: uuid } });
 
     if (!track) notFoundError(entity.track);
 

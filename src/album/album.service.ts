@@ -1,10 +1,7 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { FavoriteService } from 'src/favorite/favorite.service';
-import { TrackService } from 'src/track/track.service';
+import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { AlbumStore } from './interfaces/album-storage.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -13,27 +10,21 @@ export class AlbumService {
   constructor(
     @InjectRepository(AlbumEntity)
     private albumRepository: Repository<AlbumEntity>,
-    @Inject('AlbumStore')
-    private storage: AlbumStore,
-    @Inject(forwardRef(() => FavoriteService))
-    private favoriteService: FavoriteService,
-    @Inject(forwardRef(() => TrackService))
-    private trackService: TrackService,
   ) {}
-  async create(createAlbumDto: CreateAlbumDto) {
-    const artist = new AlbumEntity().create(createAlbumDto);
+  async create(createAlbumDto: CreateAlbumDto): Promise<AlbumEntity> {
+    const album = new AlbumEntity().create(createAlbumDto);
 
-    const createdArtist = await this.albumRepository.save(artist);
+    const createdAlbum = await this.albumRepository.save(album);
 
-    return createdArtist;
+    return createdAlbum;
   }
 
-  async findAll() {
+  async findAll(): Promise<AlbumEntity[]> {
     const albums = await this.albumRepository.find();
     return albums;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<AlbumEntity | undefined> {
     const album = await this.albumRepository.findOne({ where: { id } });
 
     if (!album) return undefined;
@@ -41,7 +32,10 @@ export class AlbumService {
     return album;
   }
 
-  async update(album: AlbumEntity, updateAlbumDto: UpdateAlbumDto) {
+  async update(
+    album: AlbumEntity,
+    updateAlbumDto: UpdateAlbumDto,
+  ): Promise<AlbumEntity> {
     const update = album.update(updateAlbumDto);
 
     const result = await this.albumRepository.update(album.id, update);
@@ -49,9 +43,7 @@ export class AlbumService {
     if (result.affected) return update;
   }
 
-  remove(id: string): void {
-    this.trackService.removeAlbum(id);
-    this.favoriteService.removeAlbum(id);
-    this.albumRepository.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.albumRepository.delete(id);
   }
 }

@@ -1,5 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { FavoriteService } from 'src/favorite/favorite.service';
+import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
@@ -11,10 +10,8 @@ export class TrackService {
   constructor(
     @InjectRepository(TrackEntity)
     private trackRepository: Repository<TrackEntity>,
-    @Inject(forwardRef(() => FavoriteService))
-    private favoriteService: FavoriteService,
   ) {}
-  async create(createTrackDto: CreateTrackDto) {
+  async create(createTrackDto: CreateTrackDto): Promise<TrackEntity> {
     const track = new TrackEntity().create(createTrackDto);
 
     const createdTrack = await this.trackRepository.save(track);
@@ -22,20 +19,22 @@ export class TrackService {
     return createdTrack;
   }
 
-  async findAll() {
+  async findAll(): Promise<TrackEntity[] | []> {
     const track = await this.trackRepository.find();
     return track;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<TrackEntity | undefined> {
     const track = await this.trackRepository.findOne({ where: { id } });
-
     if (!track) return undefined;
 
     return track;
   }
 
-  async update(track: TrackEntity, updateTrackDto: UpdateTrackDto) {
+  async update(
+    track: TrackEntity,
+    updateTrackDto: UpdateTrackDto,
+  ): Promise<TrackEntity> {
     const update = track.update(updateTrackDto);
 
     const result = await this.trackRepository.update(track.id, update);
@@ -43,7 +42,7 @@ export class TrackService {
     if (result.affected) return update;
   }
 
-  remove(id: string): void {
-    this.trackRepository.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.trackRepository.delete(id);
   }
 }

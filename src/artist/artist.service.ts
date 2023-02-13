@@ -1,6 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { FavoriteService } from 'src/favorite/favorite.service';
-import { TrackService } from 'src/track/track.service';
+import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
@@ -12,12 +10,8 @@ export class ArtistService {
   constructor(
     @InjectRepository(ArtistEntity)
     private artistRepository: Repository<ArtistEntity>,
-    @Inject(forwardRef(() => FavoriteService))
-    private favoriteService: FavoriteService,
-    @Inject(forwardRef(() => TrackService))
-    private trackService: TrackService,
   ) {}
-  async create(createArtistDto: CreateArtistDto) {
+  async create(createArtistDto: CreateArtistDto): Promise<ArtistEntity> {
     const artist = new ArtistEntity().create(createArtistDto);
 
     const createdArtist = await this.artistRepository.save(artist);
@@ -25,12 +19,12 @@ export class ArtistService {
     return createdArtist;
   }
 
-  async findAll() {
+  async findAll(): Promise<ArtistEntity[] | []> {
     const artists = await this.artistRepository.find();
     return artists;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<ArtistEntity> {
     const artist = await this.artistRepository.findOne({ where: { id } });
 
     if (!artist) return undefined;
@@ -46,9 +40,7 @@ export class ArtistService {
     if (result.affected) return update;
   }
 
-  remove(id: string): void {
-    this.favoriteService.removeArtist(id);
-    this.trackService.removeArtist(id);
-    this.artistRepository.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.artistRepository.delete(id);
   }
 }
