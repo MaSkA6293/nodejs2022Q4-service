@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateAlbumDto } from '../dto/update-album.dto';
 import { CreateAlbumDto } from '../dto/create-album.dto';
@@ -19,7 +25,7 @@ export class AlbumEntity {
   @Column()
   artistId: string | null;
 
-  @ManyToOne(() => ArtistEntity, (artist) => artist.id, {
+  @OneToOne(() => ArtistEntity, (artist) => artist.id, {
     onDelete: 'SET NULL',
   })
   artist: ArtistEntity;

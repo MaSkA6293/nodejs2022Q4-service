@@ -1,7 +1,13 @@
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from '../dto/create-track.dto';
 import { UpdateTrackDto } from '../dto/update-track.dto';
@@ -23,12 +29,12 @@ export class TrackEntity {
   @Column()
   duration: number;
 
-  @ManyToOne(() => ArtistEntity, (artist) => artist.id, {
+  @OneToOne(() => ArtistEntity, (artist) => artist.id, {
     onDelete: 'SET NULL',
   })
   artist: ArtistEntity;
 
-  @ManyToOne(() => AlbumEntity, (album) => album.id, {
+  @OneToOne(() => AlbumEntity, (album) => album.id, {
     onDelete: 'SET NULL',
   })
   album: AlbumEntity;

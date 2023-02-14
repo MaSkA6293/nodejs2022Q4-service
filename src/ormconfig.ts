@@ -11,8 +11,8 @@ export default {
   password: process.env.POSTGRES_PASSWORD ?? 'admin',
   database: process.env.POSTGRES_DB ?? 'postgres',
   synchronize: false,
-  entities: ['dist/**/entities/*.entity.js'],
   subscribers: [],
   migrations: ['dist/**/migration/*.js'],
   migrationsRun: true,
+  autoLoadEntities: true,
 } as DataSourceOptions;

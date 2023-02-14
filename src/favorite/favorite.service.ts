@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { TrackService } from 'src/track/track.service';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class FavoriteService {
+export class FavoriteService implements OnModuleInit {
   constructor(
     @InjectRepository(FavoriteEntity)
     private favoriteRepository: Repository<FavoriteEntity>,
@@ -16,6 +16,23 @@ export class FavoriteService {
     @Inject(forwardRef(() => AlbumService)) private albumService: AlbumService,
     @Inject(forwardRef(() => TrackService)) private trackService: TrackService,
   ) {}
+
+  async onModuleInit() {
+    const favorites = await this.favoriteRepository.findOne({
+      where: {},
+      relations: ['artists', 'albums', 'tracks'],
+    });
+
+    if (favorites) return;
+
+    const createdFavorites = this.favoriteRepository.create({
+      artists: [],
+      albums: [],
+      tracks: [],
+    });
+
+    await this.favoriteRepository.save(createdFavorites);
+  }
 
   async addTrack(id: string): Promise<boolean> {
     const favorites = await this.findAll();
@@ -106,14 +123,7 @@ export class FavoriteService {
       where: {},
       relations: ['artists', 'albums', 'tracks'],
     });
-    if (favorites) return favorites;
 
-    const createdFavorites = this.favoriteRepository.create({
-      artists: [],
-      albums: [],
-      tracks: [],
-    });
-
-    return await this.favoriteRepository.save(createdFavorites);
+    return favorites;
   }
 }
