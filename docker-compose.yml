@@ -10,14 +10,14 @@ services:
     depends_on:
       - postgres
     volumes:
-      - .:/usr/app
-      - /usr/app/node_modules
+      - ./src:/usr/app/src
     restart: always
   postgres:
     container_name: postgres
     build: ./src/database
     volumes:
       - ./src/database/data:/var/lib/postgresql/data:rw
+      - ./src/database/logs:/var/lib/postgresql/logs:rw
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
