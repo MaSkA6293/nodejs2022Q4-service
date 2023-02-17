@@ -11,8 +11,9 @@ export class rootMigration1676015957047 implements MigrationInterface {
     await queryRunner.createTable(getArtistTable());
     await queryRunner.createTable(getAlbumTable());
     await queryRunner.createTable(getTrackTable());
-    await queryRunner.createTable(getFavoriteTable());
-
+    await queryRunner.createTable(getFavoriteAlbumTable());
+    await queryRunner.createTable(getFavoriteTrackTable());
+    await queryRunner.createTable(getFavoriteArtistTable());
     await queryRunner.createForeignKey(
       'track',
       new TableForeignKey({
@@ -43,34 +44,36 @@ export class rootMigration1676015957047 implements MigrationInterface {
         onUpdate: 'NO ACTION',
       }),
     );
+
     await queryRunner.createForeignKey(
-      'album',
+      'favoriteAlbum',
       new TableForeignKey({
-        columnNames: ['favoritesId'],
+        columnNames: ['albumId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'favorite',
-        onDelete: 'SET NULL',
-        onUpdate: 'NO ACTION',
-      }),
-    );
-    await queryRunner.createForeignKey(
-      'artist',
-      new TableForeignKey({
-        columnNames: ['favoritesId'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'favorite',
-        onDelete: 'SET NULL',
+        referencedTableName: 'album',
+        onDelete: 'CASCADE',
         onUpdate: 'NO ACTION',
       }),
     );
 
     await queryRunner.createForeignKey(
-      'track',
+      'favoriteTrack',
       new TableForeignKey({
-        columnNames: ['favoritesId'],
+        columnNames: ['trackId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'favorite',
-        onDelete: 'SET NULL',
+        referencedTableName: 'track',
+        onDelete: 'CASCADE',
+        onUpdate: 'NO ACTION',
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'favoriteArtist',
+      new TableForeignKey({
+        columnNames: ['artistId'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'artist',
+        onDelete: 'CASCADE',
         onUpdate: 'NO ACTION',
       }),
     );
@@ -86,14 +89,25 @@ export class rootMigration1676015957047 implements MigrationInterface {
     const tableTrack = await queryRunner.getTable('track');
     await queryRunner.dropForeignKeys(tableTrack, tableArtist.foreignKeys);
 
-    const tableFavorite = await queryRunner.getTable('favorite');
-    await queryRunner.dropForeignKeys(tableFavorite, tableArtist.foreignKeys);
+    const favoriteTrack = await queryRunner.getTable('favoriteTrack');
+    await queryRunner.dropForeignKeys(favoriteTrack, favoriteTrack.foreignKeys);
+
+    const favoriteArtist = await queryRunner.getTable('favoriteArtist');
+    await queryRunner.dropForeignKeys(
+      favoriteArtist,
+      favoriteArtist.foreignKeys,
+    );
+
+    const favoriteAlbum = await queryRunner.getTable('favoriteAlbum');
+    await queryRunner.dropForeignKeys(favoriteAlbum, favoriteAlbum.foreignKeys);
 
     await queryRunner.dropTable('user');
     await queryRunner.dropTable('artist');
     await queryRunner.dropTable('album');
     await queryRunner.dropTable('track');
-    await queryRunner.dropTable('favorite');
+    await queryRunner.dropTable('favoriteAlbum');
+    await queryRunner.dropTable('favoriteTrack');
+    await queryRunner.dropTable('favoriteArtist');
   }
 }
 
@@ -149,11 +163,6 @@ const getArtistTable = () =>
         type: 'boolean',
         isNullable: false,
       },
-      {
-        name: 'favoritesId',
-        type: 'uuid',
-        isNullable: true,
-      },
     ],
   });
 
@@ -179,11 +188,6 @@ const getAlbumTable = () =>
       },
       {
         name: 'artistId',
-        type: 'uuid',
-        isNullable: true,
-      },
-      {
-        name: 'favoritesId',
         type: 'uuid',
         isNullable: true,
       },
@@ -220,23 +224,59 @@ const getTrackTable = () =>
         type: 'int',
         isNullable: false,
       },
-      {
-        name: 'favoritesId',
-        type: 'uuid',
-        isNullable: true,
-      },
     ],
   });
 
-const getFavoriteTable = () =>
+const getFavoriteAlbumTable = () =>
   new Table({
-    name: 'favorite',
+    name: 'favoriteAlbum',
     columns: [
       {
         name: 'id',
         type: 'uuid DEFAULT uuid_generate_v4()',
         isPrimary: true,
         isNullable: false,
+      },
+      {
+        name: 'albumId',
+        type: 'uuid',
+        isNullable: true,
+      },
+    ],
+  });
+
+const getFavoriteArtistTable = () =>
+  new Table({
+    name: 'favoriteArtist',
+    columns: [
+      {
+        name: 'id',
+        type: 'uuid DEFAULT uuid_generate_v4()',
+        isPrimary: true,
+        isNullable: false,
+      },
+      {
+        name: 'artistId',
+        type: 'uuid',
+        isNullable: true,
+      },
+    ],
+  });
+
+const getFavoriteTrackTable = () =>
+  new Table({
+    name: 'favoriteTrack',
+    columns: [
+      {
+        name: 'id',
+        type: 'uuid DEFAULT uuid_generate_v4()',
+        isPrimary: true,
+        isNullable: false,
+      },
+      {
+        name: 'trackId',
+        type: 'uuid',
+        isNullable: true,
       },
     ],
   });

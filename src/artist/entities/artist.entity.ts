@@ -1,4 +1,3 @@
-import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from '../dto/create-artist.dto';
@@ -14,11 +13,6 @@ export class ArtistEntity {
 
   @Column()
   grammy: boolean;
-
-  @ManyToOne(() => FavoriteEntity, (favorite) => favorite.artists, {
-    onDelete: 'SET NULL',
-  })
-  favorites: FavoriteEntity;
 
   update(updateArtistDto: UpdateArtistDto) {
     const { name, grammy } = updateArtistDto;

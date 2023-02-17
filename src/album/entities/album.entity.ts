@@ -1,14 +1,7 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateAlbumDto } from '../dto/update-album.dto';
 import { CreateAlbumDto } from '../dto/create-album.dto';
-import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 
 @Entity('album')
@@ -29,11 +22,6 @@ export class AlbumEntity {
     onDelete: 'SET NULL',
   })
   artist: ArtistEntity;
-
-  @ManyToOne(() => FavoriteEntity, (favorite) => favorite.albums, {
-    onDelete: 'SET NULL',
-  })
-  favorites: FavoriteEntity;
 
   update(updateAlbumDto: UpdateAlbumDto) {
     const { name, year, artistId } = updateAlbumDto;

@@ -8,9 +8,7 @@ import { FavoriteModule } from './favorite/favorite.module';
 import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configService from './ormconfig';
-import * as dotenv from 'dotenv';
 import { ConfigModule } from '@nestjs/config';
-dotenv.config();
 
 @Module({
   imports: [

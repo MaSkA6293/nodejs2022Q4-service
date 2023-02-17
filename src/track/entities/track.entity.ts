@@ -1,13 +1,6 @@
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
-import { FavoriteEntity } from 'src/favorite/entities/favorite.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from '../dto/create-track.dto';
 import { UpdateTrackDto } from '../dto/update-track.dto';
@@ -38,11 +31,6 @@ export class TrackEntity {
     onDelete: 'SET NULL',
   })
   album: AlbumEntity;
-
-  @ManyToOne(() => FavoriteEntity, (favorite) => favorite.tracks, {
-    onDelete: 'SET NULL',
-  })
-  favorites: FavoriteEntity;
 
   update(updateTrackDto: UpdateTrackDto) {
     const { name, artistId, albumId, duration } = updateTrackDto;

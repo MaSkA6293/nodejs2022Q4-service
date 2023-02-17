@@ -12,14 +12,13 @@ import { FavoriteService } from './favorite.service';
 import { HttpStatus } from '@nestjs/common';
 import { getMessageSuccess, notFavoriteError } from './utils';
 import { entity } from 'src/interfaces';
-import { FavoriteEntity } from './entities/favorite.entity';
 
 @Controller('favs')
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get()
-  async findAll(): Promise<FavoriteEntity> {
+  async findAll(): Promise<any> {
     return await this.favoriteService.findAll();
   }
 
