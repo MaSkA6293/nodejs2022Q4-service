@@ -1,1 +1,3 @@
 test/artists.e2e.spec.ts
+src/database/data
+src/database/logs
