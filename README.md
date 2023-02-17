@@ -8,67 +8,55 @@ Home Library Service! `Users` can create, read, update, delete data about `Artis
 
 1. Install Node.js
 
-2. Clone repository
+2. Install docker
 
-```
+3. Clone repository
+
+```shell
 git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 ```
 
-3. Switch branch <code>develop</code>
-4. To install all dependencies use <code>npm install</code>
+4. Switch branch database/ORM
 
-## Before running app
+```shell
+git checkout database/ORM
+```
 
-1. Rename <code>.env.example</code> to <code>.env</code>
+5. To install all dependencies (be able run tests) use
+
+```shell
+npm install
+```
+
+## Before running `docker-compose up` rename <code>.env.example</code> to <code>.env</code>
 
 ## Running application
 
-1. Production mode:
+Write in the terminal in the root folder:
 
-```
-npm start
-```
-
-2. Development mode
-
-```
-npm run start:dev
-```
-
-The app will be running on <code>http://localhost:4000/</code> by default
-
-## To get information about REST Service
-
-1. Go to SWAGGER editor <code>https://editor.swagger.io/</code>
-2. Copy <code>[code](./doc/api.yaml)</code> and paste it into editor
-
-## Use Postman collection to test REST Service
-
-Import the collection in Postman: <code>[postman collection](./rest%20service%20nodeJS%20task.postman_collection.json)</code>
-
-## Using App with Docker
-
-- Download and install docker
-
-## How to start
-
-- Write in console in root folder:
-
-```
+```shell
 docker-compose up
 ```
 
-## Script for vulnerabilities scanning
+## How to check the app
 
-- To scan app image
+1. Open a new terminal in the root folder and write:
 
+```shell
+npm run test
 ```
+
+2. To check vulnerabilities:
+
+- scan app image
+
+```shell
 npm run scan:app
 ```
 
-- To scan database image
+- scan db image
 
-```
+```shell
 npm run scan:db
 ```
 
@@ -78,50 +66,12 @@ The [images](https://hub.docker.com/repository/docker/812857b74d26/nodejs2022q4-
 
 To get app image:
 
-```
+```shell
 docker pull 812857b74d26/nodejs2022q4-service:app
 ```
 
 To get db image:
 
-```
+```shell
 docker pull 812857b74d26/nodejs2022q4-service:db
-```
-
-## Testing
-
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
 ```
