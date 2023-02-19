@@ -4,3 +4,12 @@ export enum entity {
   user = 'user',
   album = 'album',
 }
+
+export type loggerInfoProps = {
+  date: string;
+  url: string;
+  method: string;
+  queryParams: string;
+  body: string;
+  statusCode: number;
+};

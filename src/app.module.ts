@@ -1,5 +1,4 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
@@ -9,6 +8,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configService from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
+import { AppLogger } from './middlewares/logger/logger.module';
 
 @Module({
   imports: [
@@ -19,8 +19,8 @@ import { ConfigModule } from '@nestjs/config';
     FavoriteModule,
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
     TypeOrmModule.forRoot(configService),
+    AppLogger,
   ],
-  controllers: [AppController],
   providers: [
     {
       provide: APP_PIPE,

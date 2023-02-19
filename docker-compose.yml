@@ -13,6 +13,7 @@ services:
       - postgres
     volumes:
       - ./src:/usr/app/src
+      - ./logs:/usr/app/logs
     restart: always
   postgres:
     container_name: postgres

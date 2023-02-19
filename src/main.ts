@@ -4,10 +4,12 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const port = process.env.PORT ? process.env.PORT : 4000;
+const port = process.env.PORT ?? 4000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
