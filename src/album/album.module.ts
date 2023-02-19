@@ -1,5 +1,4 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { InMemoryAlbumStore } from './store/album.store';
 import { AlbumController } from './album.controller';
 import { AlbumService } from './album.service';
 import { TrackModule } from 'src/track/track.module';
@@ -9,13 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   controllers: [AlbumController],
-  providers: [
-    AlbumService,
-    {
-      provide: 'AlbumStore',
-      useClass: InMemoryAlbumStore,
-    },
-  ],
+  providers: [AlbumService],
   imports: [
     forwardRef(() => FavoriteModule),
     forwardRef(() => TrackModule),
