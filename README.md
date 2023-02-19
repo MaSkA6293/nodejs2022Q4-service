@@ -54,6 +54,10 @@ npm run test
 
 2. To check vulnerabilities:
 
+#### Please pay attention on what exactly operating system you're using:
+
+1. For Windows use:
+
 - scan app image
 
 ```shell
@@ -64,6 +68,20 @@ npm run scan:app
 
 ```shell
 npm run scan:db
+```
+
+2. For Ubuntu:
+
+- scan app image
+
+```shell
+npm run scan:app-ubuntu
+```
+
+- scan db image
+
+```shell
+npm run scan:db-ubuntu
 ```
 
 ## The image is pushed to DockerHub
