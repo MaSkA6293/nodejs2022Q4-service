@@ -16,13 +16,19 @@ Home Library Service! `Users` can create, read, update, delete data about `Artis
 git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 ```
 
-4. Switch branch database/ORM
+4. Go to the project directory
+
+```shell
+cd nodejs2022Q4-service
+```
+
+5. Switch branch database/ORM
 
 ```shell
 git checkout database/ORM
 ```
 
-5. To install all dependencies (be able run tests) use
+6. To install all dependencies (be able run tests) use
 
 ```shell
 npm install
