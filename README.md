@@ -1,72 +1,101 @@
-# Home Library Service
+# REST Service
 
-## Prerequisites
+## Description
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+Home Library Service! `Users` can create, read, update, delete data about `Artists`, `Tracks` and `Albums`, add them to `Favorites` in their own Home Library!
 
-## Downloading
+## Install
 
+1. Install Node.js
+
+2. Install docker
+
+3. Clone repository
+
+```shell
+git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 ```
-git clone {repository URL}
+
+4. Go to the project directory
+
+```shell
+cd nodejs2022Q4-service
 ```
 
-## Installing NPM modules
+5. Switch branch database/ORM
 
+```shell
+git checkout database/ORM
 ```
+
+6. To install all dependencies (be able run tests) use
+
+```shell
 npm install
 ```
 
+## Before running `docker-compose up` rename <code>.env.example</code> to <code>.env</code>
+
 ## Running application
 
+Write in the terminal in the root folder:
+
+```shell
+docker-compose up
 ```
-npm start
-```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+## How to check the app
 
-## Testing
+1. Open a new terminal in the root folder and write:
 
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
+```shell
 npm run test
 ```
 
-To run only one of all test suites
+2. To check vulnerabilities:
 
-```
-npm run test -- <path to suite>
-```
+#### Please pay attention on what exactly operating system you're using:
 
-To run all test with authorization
+1. For Windows use:
 
-```
-npm run test:auth
-```
+- scan app image
 
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
+```shell
+npm run scan:app
 ```
 
-### Auto-fix and format
+- scan db image
 
-```
-npm run lint
-```
-
-```
-npm run format
+```shell
+npm run scan:db
 ```
 
-### Debugging in VSCode
+2. For Ubuntu:
 
-Press <kbd>F5</kbd> to debug.
+- scan app image
 
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+```shell
+npm run scan:app-ubuntu
+```
+
+- scan db image
+
+```shell
+npm run scan:db-ubuntu
+```
+
+## The image is pushed to DockerHub
+
+The [images](https://hub.docker.com/repository/docker/812857b74d26/nodejs2022q4-service/tags?page=1&ordering=last_updated)
+
+To get app image:
+
+```shell
+docker pull 812857b74d26/nodejs2022q4-service:app
+```
+
+To get db image:
+
+```shell
+docker pull 812857b74d26/nodejs2022q4-service:db
+```
