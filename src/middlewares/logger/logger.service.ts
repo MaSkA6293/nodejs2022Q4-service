@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { appendFileSync } from 'fs';
 import * as path from 'path';
@@ -26,8 +26,6 @@ export class LoggerMiddleware implements NestMiddleware {
       logFileRotation(logFilePath);
 
       appendFileSync(logFilePath, log);
-
-      Logger.log(log);
     });
 
     next();

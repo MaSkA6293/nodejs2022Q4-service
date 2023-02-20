@@ -12,4 +12,5 @@ export type loggerInfoProps = {
   queryParams: string;
   body: string;
   statusCode: number;
+  errorMessage?: string;
 };
