@@ -1,5 +1,5 @@
 import { validate as uuidValidate } from 'uuid';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, LogLevel } from '@nestjs/common';
 import { entity } from './interfaces';
 import { EOL } from 'os';
 
@@ -27,4 +27,18 @@ export const getUncaughtExceptionLog = (err, origin, short = true) => {
 
 export const getUnhandledRejectionLog = (reason, promise) => {
   return `${EOL}Date: ${new Date().toUTCString()},${EOL}Rejection: ${promise},${EOL}Reason: ${reason}${EOL}`;
+};
+
+export const getLoggingLevel = (level: string): LogLevel[] => {
+  switch (level) {
+    case '0': {
+      return ['warn'];
+    }
+    case '1': {
+      return ['log', 'error', 'verbose', 'warn'];
+    }
+    case '2': {
+      return ['log', 'error', 'verbose', 'warn', 'debug'];
+    }
+  }
 };

@@ -4,28 +4,27 @@ import { appendFileSync } from 'fs';
 import * as path from 'path';
 import { getLog, logFileRotation } from './utils';
 
-const logFilePath = path.join(__dirname + '/../../../logs/log_info.txt');
-
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  async use(req: Request, res: Response, next: NextFunction) {
-    const { url, method } = req;
-    const timeStart = new Date();
-    const body: string | null = JSON.stringify(req.body);
+  private logFilePath = path.join(__dirname + '/../../../logs/log_info.txt');
 
+  use(req: Request, res: Response, next: NextFunction) {
+    const { url, method, body } = req;
+    const start = new Date().getTime();
     res.on('close', () => {
       const log = getLog({
-        date: timeStart.toUTCString(),
+        date: new Date().toUTCString(),
+        duration: `${(new Date().getTime() - start).toString()} ms`,
         url,
         method,
         queryParams: JSON.stringify(req.params),
-        body,
+        body: JSON.stringify(body),
         statusCode: res.statusCode,
       });
 
-      logFileRotation(logFilePath);
+      logFileRotation(this.logFilePath);
 
-      appendFileSync(logFilePath, log);
+      appendFileSync(this.logFilePath, log);
     });
 
     next();

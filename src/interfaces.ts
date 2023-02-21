@@ -7,6 +7,7 @@ export enum entity {
 
 export type loggerInfoProps = {
   date: string;
+  duration?: string;
   url: string;
   method: string;
   queryParams: string;
