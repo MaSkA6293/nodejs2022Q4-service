@@ -140,6 +140,11 @@ const getUserTable = () =>
         name: 'updatedAt',
         type: 'bigint',
       },
+      {
+        name: 'secretId',
+        type: 'text',
+        isNullable: true,
+      },
     ],
   });
 

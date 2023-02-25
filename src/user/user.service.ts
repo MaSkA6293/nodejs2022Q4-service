@@ -5,6 +5,9 @@ import { HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
+
+const { BCRYPT_SALT } = process.env;
 
 @Injectable()
 export class UserService {
@@ -14,8 +17,8 @@ export class UserService {
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await new UserEntity(createUserDto).create(createUserDto);
-    const createdUser = this.userRepository.create(user);
-    return await this.userRepository.save(createdUser);
+
+    return await this.userRepository.save(user);
   }
 
   async findAll() {
@@ -25,7 +28,7 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOneBy({ id });
 
     if (!user) return undefined;
 
@@ -46,6 +49,8 @@ export class UserService {
 
     const update: UserEntity = await user.update();
 
+    update.password = await bcrypt.hash(update.password, Number(BCRYPT_SALT));
+
     const result = await this.userRepository.update(user.id, update);
 
     if (result.affected) return { data: update, error: undefined };
@@ -55,5 +60,43 @@ export class UserService {
 
   async remove(id: string) {
     await this.userRepository.delete(id);
+  }
+
+  async findOneByLogin(userData: CreateUserDto): Promise<boolean> {
+    const { login, password } = userData;
+    const user = await this.userRepository.findOneBy({ login });
+    if (!user) return false;
+
+    const isValidPassword = await user.validatePassword(password);
+
+    if (isValidPassword) return true;
+
+    return false;
+  }
+
+  async getUserByCredentials(
+    userData: CreateUserDto,
+  ): Promise<UserEntity | undefined> {
+    const { login, password } = userData;
+
+    const user = await this.userRepository.findOneBy({ login });
+
+    if (!user) return undefined;
+
+    const isValidPassword = await user.validatePassword(password);
+
+    if (isValidPassword) return user;
+
+    return undefined;
+  }
+
+  async saveSecretId(user: UserEntity, id: string): Promise<boolean> {
+    user.secretId = id;
+
+    const result = await this.userRepository.update(user.id, user);
+
+    if (result.affected) return true;
+
+    return false;
   }
 }

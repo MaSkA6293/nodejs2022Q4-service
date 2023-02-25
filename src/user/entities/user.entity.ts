@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -33,11 +27,9 @@ export class UserEntity {
   @Column()
   updatedAt: number;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, Number(BCRYPT_SALT));
-  }
+  @Exclude()
+  @Column()
+  secretId: string;
 
   constructor(partial: Partial<UserEntity | CreateUserDto>) {
     Object.assign(this, partial);
@@ -52,7 +44,11 @@ export class UserEntity {
   async create(createUserDto: CreateUserDto) {
     this.id = uuidv4();
     this.login = createUserDto.login;
-    this.password = createUserDto.password;
+    this.password = await bcrypt.hash(
+      createUserDto.password,
+      Number(BCRYPT_SALT),
+    );
+    createUserDto.password;
     this.version = 1;
     this.createdAt = new Date().getTime();
     this.updatedAt = new Date().getTime();

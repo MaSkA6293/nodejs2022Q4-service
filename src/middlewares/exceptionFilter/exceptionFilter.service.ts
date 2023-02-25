@@ -25,10 +25,12 @@ export class CustomExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    const { message } = exception.getResponse() as { message: string };
+
     const errorMessage =
       statusCode === HttpStatus.INTERNAL_SERVER_ERROR
         ? 'Internal Server Error'
-        : exception.message;
+        : message;
 
     const log = getLog({
       date: new Date().toUTCString(),
