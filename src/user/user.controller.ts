@@ -8,6 +8,8 @@ import {
   Delete,
   HttpCode,
   ParseUUIDPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,21 +24,25 @@ import { UserEntity } from './entities/user.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':uuid')
   findOne(@Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity) {
     return user;
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':uuid')
   async update(
     @Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity,
@@ -58,9 +64,9 @@ export class UserController {
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(
+  async remove(
     @Param('uuid', ParseUUIDPipe, UserIsExistPipe) user: UserEntity,
-  ): void {
-    this.userService.remove(user.id);
+  ): Promise<void> {
+    await this.userService.remove(user.id);
   }
 }

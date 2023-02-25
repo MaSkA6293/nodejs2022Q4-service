@@ -1,7 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from '../dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
+
+const { BCRYPT_SALT } = process.env;
 
 @Entity('user')
 export class UserEntity {
@@ -12,6 +21,7 @@ export class UserEntity {
   login: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
@@ -23,19 +33,23 @@ export class UserEntity {
   @Column()
   updatedAt: number;
 
-  toResponse() {
-    const { id, login, version, createdAt, updatedAt } = this;
-    return { id, login, version, createdAt, updatedAt };
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, Number(BCRYPT_SALT));
   }
 
-  update(updateUserDto: UpdateUserDto) {
-    this.password = updateUserDto.newPassword;
+  constructor(partial: Partial<UserEntity | CreateUserDto>) {
+    Object.assign(this, partial);
+  }
+
+  async update() {
     this.version = this.version + 1;
     this.updatedAt = new Date().getTime();
     return this;
   }
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     this.id = uuidv4();
     this.login = createUserDto.login;
     this.password = createUserDto.password;
@@ -45,8 +59,9 @@ export class UserEntity {
     return this;
   }
 
-  validatePassword(updateUserDto: UpdateUserDto) {
-    if (this.password === updateUserDto.oldPassword) return true;
-    return false;
+  async validatePassword(password: string): Promise<boolean> {
+    const isPasswordCorrect = await bcrypt.compare(password, this.password);
+
+    return isPasswordCorrect;
   }
 }

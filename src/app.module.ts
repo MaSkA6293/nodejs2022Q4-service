@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import configService from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
 import { AppLogger } from './middlewares/logger/logger.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AppLogger } from './middlewares/logger/logger.module';
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
     TypeOrmModule.forRoot(configService),
     AppLogger,
+    AuthModule,
   ],
   providers: [
     {

@@ -13,17 +13,15 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const user = new UserEntity().create(createUserDto);
-
+    const user = await new UserEntity(createUserDto).create(createUserDto);
     const createdUser = this.userRepository.create(user);
-
-    return (await this.userRepository.save(createdUser)).toResponse();
+    return await this.userRepository.save(createdUser);
   }
 
   async findAll() {
     const users = await this.userRepository.find();
 
-    return users.map((user) => user.toResponse());
+    return users;
   }
 
   async findOne(id: string) {
@@ -31,7 +29,7 @@ export class UserService {
 
     if (!user) return undefined;
 
-    return user.toResponse();
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -39,14 +37,18 @@ export class UserService {
 
     if (!user) return { data: undefined, error: HttpStatus.NOT_FOUND };
 
-    if (!user.validatePassword(updateUserDto))
+    const isValidPassword = await user.validatePassword(
+      updateUserDto.oldPassword,
+    );
+
+    if (!isValidPassword)
       return { data: undefined, error: HttpStatus.FORBIDDEN };
 
-    const update: UserEntity = user.update(updateUserDto);
+    const update: UserEntity = await user.update();
 
     const result = await this.userRepository.update(user.id, update);
 
-    if (result.affected) return { data: update.toResponse(), error: undefined };
+    if (result.affected) return { data: update, error: undefined };
 
     return { data: undefined, error: HttpStatus.INTERNAL_SERVER_ERROR };
   }
