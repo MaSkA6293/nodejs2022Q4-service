@@ -8,13 +8,16 @@ import {
   Delete,
   HttpCode,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { ArtistService } from './artist.service';
 import { ArtistIsExistPipe } from './artist.isExist.pipe';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('Artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}

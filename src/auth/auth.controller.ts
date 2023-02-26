@@ -39,7 +39,7 @@ export class AuthController {
         this.authService.getRefreshToken(token);
 
       const saveResult = await this.authService.saveSecretId(user, secretId);
-      if (saveResult) return { token, refreshToken };
+      if (saveResult) return { accessToken: token, refreshToken };
     }
     throw new ForbiddenException();
   }

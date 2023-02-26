@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,7 +20,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { entity } from 'src/interfaces';
 import { UserIsExistPipe } from './user.isExist.pipe';
 import { UserEntity } from './entities/user.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

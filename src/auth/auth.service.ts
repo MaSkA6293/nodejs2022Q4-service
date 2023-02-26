@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { ValidateUserDto } from './dto/validate-user.dto';
 
 dotenv.config();
 
@@ -94,5 +95,15 @@ export class AuthService {
     if (result.affected) return true;
 
     return false;
+  }
+
+  async validateUser(userData: ValidateUserDto) {
+    const { login, id } = userData;
+
+    const user = await this.userRepository.findOneBy({ login, id });
+
+    if (!user) return false;
+
+    return true;
   }
 }
