@@ -7,6 +7,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ValidateUserDto } from './dto/validate-user.dto';
+import { JwtPayloadDto } from './dto/jwt-payload.dto';
 
 dotenv.config();
 
@@ -19,8 +20,8 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
-  getJwtToken(id: string, login: string): string {
-    return jwt.sign({ id, login }, JWT_SECRET, {
+  getJwtToken(jwtPayload: JwtPayloadDto): string {
+    return jwt.sign(jwtPayload, JWT_SECRET, {
       expiresIn: TOKEN_EXPIRE,
     });
   }

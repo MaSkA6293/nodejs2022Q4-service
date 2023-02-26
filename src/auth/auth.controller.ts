@@ -14,7 +14,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private userService: UserService,
+    private readonly userService: UserService,
   ) {}
 
   @HttpCode(201)
@@ -34,7 +34,7 @@ export class AuthController {
     if (user) {
       const { id, login } = user;
 
-      const token = this.authService.getJwtToken(id, login);
+      const token = this.authService.getJwtToken({ id, login });
       const { secretId, refreshToken } =
         this.authService.getRefreshToken(token);
 
@@ -50,17 +50,17 @@ export class AuthController {
     const isRefreshValid = await this.authService.checkRefreshToken(
       refreshData.refreshToken,
     );
-
     if (isRefreshValid) {
       const secretIdRefreshToken = this.authService.getSecretId(
         refreshData.refreshToken,
       );
       if (!secretIdRefreshToken) throw new ForbiddenException();
       const user = await this.authService.getUserBySecretId(
-        secretIdRefreshToken,
+        refreshData.refreshToken,
       );
+      const { id, login } = user;
 
-      const newToken = this.authService.getJwtToken(user.id, user.login);
+      const newToken = this.authService.getJwtToken({ id, login });
 
       const { secretId, refreshToken } =
         this.authService.getRefreshToken(newToken);
