@@ -73,30 +73,4 @@ export class UserService {
 
     return false;
   }
-
-  async getUserByCredentials(
-    userData: CreateUserDto,
-  ): Promise<UserEntity | undefined> {
-    const { login, password } = userData;
-
-    const user = await this.userRepository.findOneBy({ login });
-
-    if (!user) return undefined;
-
-    const isValidPassword = await user.validatePassword(password);
-
-    if (isValidPassword) return user;
-
-    return undefined;
-  }
-
-  async saveSecretId(user: UserEntity, id: string): Promise<boolean> {
-    user.secretId = id;
-
-    const result = await this.userRepository.update(user.id, user);
-
-    if (result.affected) return true;
-
-    return false;
-  }
 }
