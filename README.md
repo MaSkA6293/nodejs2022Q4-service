@@ -1,72 +1,55 @@
-# Home Library Service
+# REST Service
 
-## Prerequisites
+## Description
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+Home Library Service! `Users` can create, read, update, delete data about `Artists`, `Tracks` and `Albums`, add them to `Favorites` in their own Home Library!
 
-## Downloading
+## Install
 
+1. Install Node.js
+
+2. Install docker
+
+3. Clone repository
+
+```shell
+git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 ```
-git clone {repository URL}
+
+4. Go to the project directory
+
+```shell
+cd nodejs2022Q4-service
 ```
 
-## Installing NPM modules
+5. Switch branch auth
 
+```shell
+git checkout auth
 ```
+
+6. To install all dependencies (be able run tests) use
+
+```shell
 npm install
 ```
 
+## Before running `docker-compose up` rename <code>.env.example</code> to <code>.env</code>
+
 ## Running application
 
-```
-npm start
-```
+Write in the terminal in the root folder:
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
-
-## Testing
-
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
+```shell
+docker-compose up
 ```
 
-To run only one of all test suites
+## How to check the app
 
-```
-npm run test -- <path to suite>
-```
+1. Open a new terminal in the root folder and write:
 
-To run all test with authorization
-
-```
+```shell
 npm run test:auth
 ```
 
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+2. Use postman to check auth routs
