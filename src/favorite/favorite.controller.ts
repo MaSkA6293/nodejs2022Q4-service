@@ -13,9 +13,9 @@ import { FavoriteService } from './favorite.service';
 import { HttpStatus } from '@nestjs/common';
 import { getMessageSuccess, notFavoriteError } from './utils';
 import { entity } from 'src/interfaces';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('favs')
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}

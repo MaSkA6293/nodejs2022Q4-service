@@ -15,9 +15,9 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
 import { TrackService } from './track.service';
 import { TrackIsExistPipe } from './track.isExist.pipe';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('track')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}

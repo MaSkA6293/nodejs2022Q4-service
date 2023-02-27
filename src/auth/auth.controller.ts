@@ -4,11 +4,15 @@ import {
   Body,
   HttpCode,
   ForbiddenException,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RequestExtendedWithUser } from './interfaces';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,22 +30,16 @@ export class AuthController {
     }
   }
 
+  @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('login')
-  async login(@Body() signUpDto: CreateUserDto) {
-    const user = await this.authService.getUserByCredentials(signUpDto);
+  async login(@Request() req: RequestExtendedWithUser) {
+    const { id, login } = req.user;
 
-    if (user) {
-      const { id, login } = user;
-
-      const token = this.authService.getJwtToken({ id, login });
-      const { secretId, refreshToken } =
-        this.authService.getRefreshToken(token);
-
-      const saveResult = await this.authService.saveSecretId(user, secretId);
-      if (saveResult) return { accessToken: token, refreshToken };
-    }
-    throw new ForbiddenException();
+    return this.authService.login({
+      userId: id,
+      login: login,
+    });
   }
 
   @HttpCode(200)

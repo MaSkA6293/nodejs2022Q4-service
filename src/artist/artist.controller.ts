@@ -15,9 +15,9 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { ArtistService } from './artist.service';
 import { ArtistIsExistPipe } from './artist.isExist.pipe';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('Artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}

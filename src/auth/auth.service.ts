@@ -6,8 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { ValidateUserDto } from './dto/validate-user.dto';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { JwtService } from '@nestjs/jwt';
+import { LoginProps } from './interfaces';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private jwtService: JwtService,
   ) {}
   getJwtToken(jwtPayload: JwtPayloadDto): string {
     return jwt.sign(jwtPayload, JWT_SECRET, {
@@ -98,13 +100,34 @@ export class AuthService {
     return false;
   }
 
-  async validateUser(userData: ValidateUserDto) {
-    const { login, id } = userData;
+  async login(payload: LoginProps) {
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.TOKEN_EXPIRE,
+    });
 
-    const user = await this.userRepository.findOneBy({ login, id });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRE,
+    });
 
-    if (!user) return false;
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
-    return true;
+  async validateUser(userData: CreateUserDto): Promise<UserEntity | undefined> {
+    const { login, password } = userData;
+
+    const user = await this.userRepository.findOneBy({ login });
+
+    if (!user) return undefined;
+
+    const isValidPassword = await user.validatePassword(password);
+
+    if (isValidPassword) return user;
+
+    return undefined;
   }
 }

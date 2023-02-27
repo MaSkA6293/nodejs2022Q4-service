@@ -10,10 +10,12 @@ import { FavoriteArtistEntity } from './entities/favoriteArtist.entity';
 import { FavoriteTrackEntity } from './entities/favoriteTrack.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   controllers: [FavoriteController],
-  providers: [FavoriteService, AuthService],
+  providers: [FavoriteService, AuthService, JwtService, UserService],
   imports: [
     TypeOrmModule.forFeature([
       FavoriteAlbumEntity,

@@ -20,9 +20,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { entity } from 'src/interfaces';
 import { UserIsExistPipe } from './user.isExist.pipe';
 import { UserEntity } from './entities/user.entity';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

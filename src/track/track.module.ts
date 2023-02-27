@@ -6,10 +6,12 @@ import { TrackService } from './track.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   controllers: [TrackController],
-  providers: [TrackService, AuthService],
+  providers: [TrackService, AuthService, JwtService, UserService],
   imports: [
     forwardRef(() => FavoriteModule),
     TypeOrmModule.forFeature([TrackEntity, UserEntity]),
