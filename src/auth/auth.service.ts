@@ -1,18 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { v4 as uuid } from 'uuid';
 import * as dotenv from 'dotenv';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginProps } from './interfaces';
 
 dotenv.config();
 
-const { REFRESH_TOKEN_EXPIRE, TOKEN_EXPIRE, JWT_SECRET, JWT_REFRESH_SECRET } =
+const { JWT_REFRESH_SECRET, JWT_SECRET, TOKEN_EXPIRE, REFRESH_TOKEN_EXPIRE } =
   process.env;
 
 @Injectable()
@@ -22,20 +20,6 @@ export class AuthService {
     private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
   ) {}
-  getJwtToken(jwtPayload: JwtPayloadDto): string {
-    return jwt.sign(jwtPayload, JWT_SECRET, {
-      expiresIn: TOKEN_EXPIRE,
-    });
-  }
-
-  getRefreshToken(token: string): { secretId: string; refreshToken: string } {
-    const secretId = uuid();
-    const refreshToken = jwt.sign({ secretId, token }, JWT_REFRESH_SECRET, {
-      expiresIn: REFRESH_TOKEN_EXPIRE,
-    });
-
-    return { secretId, refreshToken };
-  }
 
   async checkRefreshToken(refreshToken: string) {
     try {
@@ -43,7 +27,9 @@ export class AuthService {
 
       if (!secretId) return false;
 
-      const user = await this.userRepository.findOneBy({ secretId });
+      const user = await this.userRepository.findOneBy({
+        refreshToken: secretId,
+      });
 
       if (user) return true;
 
@@ -69,7 +55,9 @@ export class AuthService {
       secretId: string;
     };
 
-    const user = await this.userRepository.findOneBy({ secretId });
+    const user = await this.userRepository.findOneBy({
+      refreshToken: secretId,
+    });
 
     return user;
   }
@@ -90,31 +78,29 @@ export class AuthService {
     return undefined;
   }
 
-  async saveSecretId(user: UserEntity, id: string): Promise<boolean> {
-    user.secretId = id;
-
-    const result = await this.userRepository.update(user.id, user);
-
-    if (result.affected) return true;
-
-    return false;
-  }
-
   async login(payload: LoginProps) {
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: process.env.TOKEN_EXPIRE,
+      secret: JWT_SECRET,
+      expiresIn: TOKEN_EXPIRE,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRE,
+      secret: JWT_REFRESH_SECRET,
+      expiresIn: REFRESH_TOKEN_EXPIRE,
     });
+
+    await this.saveSecretId(payload.userId, refreshToken);
 
     return {
       accessToken,
       refreshToken,
     };
+  }
+
+  async saveSecretId(id: string, secretId: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    await this.userRepository.update(user.id, { refreshToken: secretId });
   }
 
   async validateUser(userData: CreateUserDto): Promise<UserEntity | undefined> {
@@ -129,5 +115,15 @@ export class AuthService {
     if (isValidPassword) return user;
 
     return undefined;
+  }
+
+  async getUserRefresh(refreshToken: string, id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (refreshToken === user.refreshToken) {
+      return user;
+    } else {
+      throw new ForbiddenException('Refresh token is invalid');
+    }
   }
 }

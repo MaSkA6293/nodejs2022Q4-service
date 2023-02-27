@@ -3,6 +3,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
 export interface TokenPayload {
   userId: string;
   login: string;
+  secretId?: string;
   iat?: number;
   exp?: number;
 }

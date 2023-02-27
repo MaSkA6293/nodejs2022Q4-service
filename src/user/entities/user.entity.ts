@@ -29,7 +29,7 @@ export class UserEntity {
 
   @Exclude()
   @Column()
-  secretId: string;
+  refreshToken: string;
 
   constructor(partial: Partial<UserEntity | CreateUserDto>) {
     Object.assign(this, partial);

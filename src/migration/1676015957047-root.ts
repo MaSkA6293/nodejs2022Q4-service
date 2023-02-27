@@ -141,7 +141,7 @@ const getUserTable = () =>
         type: 'bigint',
       },
       {
-        name: 'secretId',
+        name: 'refreshToken',
         type: 'text',
         isNullable: true,
       },
