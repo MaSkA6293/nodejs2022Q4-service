@@ -22,10 +22,10 @@ git clone https://github.com/MaSkA6293/nodejs2022Q4-service
 cd nodejs2022Q4-service
 ```
 
-5. Switch branch database/ORM
+5. Switch branch auth
 
 ```shell
-git checkout database/ORM
+git checkout auth
 ```
 
 6. To install all dependencies (be able run tests) use
@@ -49,53 +49,7 @@ docker-compose up
 1. Open a new terminal in the root folder and write:
 
 ```shell
-npm run test
+npm run test:auth
 ```
 
-2. To check vulnerabilities:
-
-#### Please pay attention on what exactly operating system you're using:
-
-1. For Windows use:
-
-- scan app image
-
-```shell
-npm run scan:app
-```
-
-- scan db image
-
-```shell
-npm run scan:db
-```
-
-2. For Ubuntu:
-
-- scan app image
-
-```shell
-npm run scan:app-ubuntu
-```
-
-- scan db image
-
-```shell
-npm run scan:db-ubuntu
-```
-
-## The image is pushed to DockerHub
-
-The [images](https://hub.docker.com/repository/docker/812857b74d26/nodejs2022q4-service/tags?page=1&ordering=last_updated)
-
-To get app image:
-
-```shell
-docker pull 812857b74d26/nodejs2022q4-service:app
-```
-
-To get db image:
-
-```shell
-docker pull 812857b74d26/nodejs2022q4-service:db
-```
+2. Use postman to check auth routs
