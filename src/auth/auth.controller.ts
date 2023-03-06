@@ -25,7 +25,7 @@ export class AuthController {
   async signUp(@Body() signUpDto: CreateUserDto) {
     const user = await this.userService.create(signUpDto);
     if (user) {
-      return { message: 'successfully signedUp' };
+      return user;
     }
   }
 
