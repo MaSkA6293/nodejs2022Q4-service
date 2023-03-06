@@ -10,7 +10,16 @@ export class LoggerMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     const { url, method, body } = req;
+
     const start = new Date().getTime();
+
+    const oldJson = res.json;
+
+    res.json = (body) => {
+      res.locals.body = body;
+      return oldJson.call(res, body);
+    };
+
     res.on('close', () => {
       const log = getLog({
         date: new Date().toUTCString(),
@@ -20,6 +29,7 @@ export class LoggerMiddleware implements NestMiddleware {
         queryParams: JSON.stringify(req.params),
         body: JSON.stringify(body),
         statusCode: res.statusCode,
+        resBody: JSON.stringify(res.locals.body),
       });
 
       logFileRotation(this.logFilePath);

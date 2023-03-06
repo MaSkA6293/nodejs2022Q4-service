@@ -32,6 +32,12 @@ export class CustomExceptionFilter implements ExceptionFilter {
         ? 'Internal Server Error'
         : message;
 
+    const responseBody = {
+      statusCode,
+      path: url,
+      message: errorMessage,
+    };
+
     const log = getLog({
       date: new Date().toUTCString(),
       url,
@@ -40,16 +46,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
       body: JSON.stringify(body),
       statusCode,
       errorMessage,
+      resBody: JSON.stringify(responseBody),
     });
 
     logFileRotation(this.logFilePath);
 
     appendFileSync(this.logFilePath, log);
 
-    response.status(statusCode).json({
-      statusCode,
-      path: url,
-      message: errorMessage,
-    });
+    response.status(statusCode).json(responseBody);
   }
 }

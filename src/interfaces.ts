@@ -14,4 +14,5 @@ export type loggerInfoProps = {
   body: string;
   statusCode: number;
   errorMessage?: string;
+  resBody: string;
 };
