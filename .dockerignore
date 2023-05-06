@@ -1,0 +1,9 @@
+node_modules
+dist
+src/database/data
+src/database/logs
+README.md
+Dockerfile
+docker-compose.yml
+.env.example
+test
